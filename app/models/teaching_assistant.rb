@@ -1,0 +1,2 @@
+class TeachingAssistant < ApplicationRecord
+end
