@@ -13,3 +13,24 @@
  *= require_tree .
  *= require_self
  */
+
+ .centered-text {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 10vh; /* 画面の高さに合わせて調整 */
+ }
+   .button-like {
+   display: inline-block;
+   padding: 10px 20px;
+   background-color: #007bff;
+   color: #fff;
+   border: none;
+   border-radius: 4px;
+   text-decoration: none;
+   text-align: center;
+   cursor: pointer;
+ }
+ .button-like:hover {
+   background-color: #0056b3;
+ }

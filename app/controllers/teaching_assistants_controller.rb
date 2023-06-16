@@ -1,5 +1,5 @@
 class TeachingAssistantsController < ApplicationController
   def index
-    @TA_data = TeachingAssistants.all
+    @TA_data = TeachingAssistant.all
   end
 end
