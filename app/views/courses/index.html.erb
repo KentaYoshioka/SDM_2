@@ -1,0 +1,33 @@
+<h1>科目一覧画面</h1>
+<body>        
+    <table>
+      <thead>
+        <tr>
+            <th>年度</th>
+            <th>学期</th>
+            <th>科目番号</th>
+            <th>授業科目名</th>
+            <th>担当教員</th>
+            <th>TA割り当て可能総時間</th>
+            <th>備考</th>
+            <th>割り当て済み時間</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @courses.each do |course| %>
+        <tr>
+            <td><%= course.year%></td>
+            <td><%= course.term%></td>
+            <td><%= link_to course.number,assign_shift_index_path(course_id: course.id)%></td>
+            <td><%= link_to course.name,assign_shift_index_path(course_id: course.id)%></td>
+            <td><%= course.instructor%></td>
+            <td><%= course.time_budget%></td>
+            <td><%= course.description%></td>
+            <td>0</td>
+        </tr>
+        <% end %>
+      </tbody>
+    </table>
+</body>
+<p><%= link_to 'TAシフト割当画面', '/assign_shift/index' %></p>
+<p><%= link_to 'TOP画面に戻る', '/top/index' %></p>

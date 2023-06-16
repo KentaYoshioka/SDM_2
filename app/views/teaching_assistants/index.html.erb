@@ -1,0 +1,36 @@
+<h1>TA候補者一覧画面</h1>
+
+
+
+<!-- index.html.erb -->
+<%= stylesheet_link_tag "teaching_assistants" %>
+
+
+<table class="table-container">
+  <!-- テーブルの内容 -->
+  <thead>
+    <tr>
+      <th>対象年度(year)</th>
+      <th>学生番号(number)</th>
+      <th>学年(grade)</th>
+      <th>氏名(name)</th>
+      <th>研究室(labo)</th>
+      <th style="width: 300px;">備考(description)</th>
+    </tr>
+  </thead>
+    <tbody>
+        <% @TA_data.each do |ta| %>
+        <tr>
+            <td style="text-align: right;"><%= ta.year%></td>
+            <td style="text-align: right;"><%= ta.number%></td>
+            <td style="text-align: right;"><%= ta.grade%></td>
+            <td style="text-align: left;"><%= ta.name%></td>
+            <td style="text-align: left;"><%= ta.labo%></td>
+            <td style="text-align: left;"><%= ta.description%></td>
+
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<p><%= link_to 'TOP画面に戻る', '/top/index' %></p>
