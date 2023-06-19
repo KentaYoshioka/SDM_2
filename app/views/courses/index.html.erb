@@ -1,6 +1,6 @@
 <h1>科目一覧画面</h1>
-<body>        
-    <table>
+<body>
+    <table class="table-container">
       <thead>
         <tr>
             <th>年度</th>
@@ -8,22 +8,23 @@
             <th>科目番号</th>
             <th>授業科目名</th>
             <th>担当教員</th>
-            <th>TA割り当て可能総時間</th>
+            <th>TA割当可能総時間</th>
+            <th>割当済時間</th>
             <th>備考</th>
-            <th>割り当て済み時間</th>
         </tr>
       </thead>
       <tbody>
         <% @courses.each do |course| %>
         <tr>
-            <td><%= course.year%></td>
-            <td><%= course.term%></td>
+            <td style="text-align: right;"><%= course.year%></td>
+            <td style="text-align: right;"><%= course.term%></td>
             <td><%= link_to course.number,assign_shift_index_path(course_id: course.id)%></td>
             <td><%= link_to course.name,assign_shift_index_path(course_id: course.id)%></td>
             <td><%= course.instructor%></td>
-            <td><%= course.time_budget%></td>
-            <td><%= course.description%></td>
-            <td>0</td>
+            <td style="text-align: right;"><%= course.time_budget%></td>
+            <td style="text-align: right;">0</td>
+            <td style="width: 300px"><%= course.description%></td>
+
         </tr>
         <% end %>
       </tbody>

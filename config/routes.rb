@@ -8,8 +8,8 @@ Rails.application.routes.draw do
   root "top#index"
 
   post '/check_data', to: "show_reports#check_data"
-  # config/routes.rb
-  post '/add_ta_text', to: 'assign_shift#add_TA_text', as: 'add_ta_text'
+
+  post '/search', to: "assign_shift#search", as: 'search'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Defines the root path route ("/")
   # root "articles#index"

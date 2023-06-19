@@ -1,7 +1,8 @@
 <h1>TAシフト割当画面</h1>
 
+<h2>科目情報</h2>
 <body>
-    <table>
+    <table class="table-container" style="width: 50%">
       <thead>
         <tr>
             <th>年度</th>
@@ -9,51 +10,100 @@
             <th>科目番号</th>
             <th>授業科目名</th>
             <th>担当教員</th>
-            <th>TA割り当て可能総時間</th>
-            <th>備考</th>
-            <th>割り当て済み時間</th>
         </tr>
       </thead>
       <tbody>
 		 <% course = @course %>
         <tr>
-            <td><%= course.year%></td>
-            <td><%= course.term%></td>
+            <td style="text-align: right;"><%= course.year%></td>
+            <td style="text-align: right;"><%= course.term%></td>
             <td><%= course.number%></td>
             <td><%= course.name%></td>
             <td><%= course.instructor%></td>
-            <td><%= course.time_budget%></td>
-            <td><%= course.description%></td>
-            <td>0</td>
-        </tr>     
+        </tr>
       </tbody>
     </table>
-</body>
-<h1>TA</h1>
 
-<button id="button1">TA追加</button>
-<button id="button2">TA削除</button>
+<table class="table-container" style="width: 50%" >
+      <thead>
+        <tr>
+            <th>TA割当可能総時間</th>
+            <th>割当済時間</th>
+            <th>備考</th>
+        </tr>
+      </thead>
+      <tbody>
+		 <% course = @course %>
+        <tr>
+            <td style="text-align: right;"><%= course.time_budget%></td>
+            <td style="text-align: right;">0</td>
+            <td style="width: 60%"><%= course.description%></td>
+        </tr>
+      </tbody>
+    </table>
+
+
+</body>
+
+<h2>TA</h2>
+<div class="button-container">
+<button id="button1" class="button-blue">TA追加</button>
+<button id="button2" class="button-red">TA削除</button>
+</div>
 <div id="displayText"></div>
 
+<!-- TA追加ボタンが押下された際の処理(SearchFormを表示) -->
 <script>
-  const Add_TA = document.getElementById('button1');
-  const Delete_TA = document.getElementById('button2');
-  const displayText = document.getElementById('displayText');
+  const button1 = document.getElementById('button1');
+  const myForm = document.getElementById('SearchForm');
 
-  Add_TA.addEventListener('click', function() {
-    const text = "TA追加";
-    displayText.textContent = text;
-  });
-
-  Delete_TA.addEventListener('click', function() {
-    const text = "TA削除";
-    displayText.textContent = text;
+  button1.addEventListener('click', function() {
+    SearchForm.style.display = 'block';
   });
 </script>
 
+<!------------------------------ TA追加後のフォーム -----------------------------
+<div id="SearchFormContainer">
+<form id="SearchForm" style="display:none;" action="/search" method="POST" remote:true>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <label for="number">学生番号:</label>
+  <input type="text" id="number" name="number" >
+
+  <label for="name">氏名:</label>
+  <input type="text" id="name" name="name">
+
+  <button type="submit">検索</button>
+</form>
+</div>
+
+--------------------------------------------------------------------------------->
+<!--js ---------------------------------------------------------------------------
+<div id="response-container">
+  <script>
+  var output = '<%= @number.nil? ? "NO" : "YES" %>';
+  var outputElement = document.getElementById('output');
+  outputElement.textContent = output;
+  </script>
+</div>
+
+--------------------------------------------------------------------------------->
 
 
 
+<!------------------------------------------------------------------------------->
+
+
+<h2>勤務時間</h2>
+<div class="button-container">
+<button class="button-blue">勤務時間追加</button>
+<button class="button-red">勤務時間削除</button>
+</div>
+
+<h2>シフト</h2>
+<div class="button-container">
+<button class="button-blue" class="centered-text">シフト追加</button>
+<button class="button-red" class="centered-text">シフト削除</button>
+</div>
 
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
