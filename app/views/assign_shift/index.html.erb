@@ -52,52 +52,24 @@
 </div>
 <div id="displayText"></div>
 
-<!-- TA追加ボタンが押下された際の処理(SearchFormを表示) -->
-<script>
-  const button1 = document.getElementById('button1');
-  const myForm = document.getElementById('SearchForm');
 
-  button1.addEventListener('click', function() {
-    SearchForm.style.display = 'block';
-  });
-</script>
-
-<!------------------------------ TA追加後のフォーム -----------------------------
 <div id="SearchFormContainer">
-<form id="SearchForm" style="display:none;" action="/search" method="POST" remote:true>
-  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <label for="number">学生番号:</label>
-  <input type="text" id="number" name="number" >
+  <form id="SearchForm" style="display:none;" >
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <label for="number">学生番号:</label>
+    <input type="text" id="number" name="number" >
 
-  <label for="name">氏名:</label>
-  <input type="text" id="name" name="name">
-
-  <button type="submit">検索</button>
+    <label for="name">氏名:</label>
+    <input type="text" id="name" name="name">
+    <button type="button" id = "SearchButton" >検索</button>
+  </form>
+</div>
+<div id="SearchResult"></div>
+<form id="resultform" action="/submit" method="post" style="display:none;">
+  <div id="tableContainer"></div>
+  <button type="submit">確定</button>
 </form>
-</div>
 
---------------------------------------------------------------------------------->
-<!--js ---------------------------------------------------------------------------
-<div id="response-container">
-  <script>
-  var output = '<%= @number.nil? ? "NO" : "YES" %>';
-  var outputElement = document.getElementById('output');
-  outputElement.textContent = output;
-  </script>
-</div>
-
---------------------------------------------------------------------------------->
-
-
-
-<!------------------------------------------------------------------------------->
-
-
-<h2>勤務時間</h2>
-<div class="button-container">
-<button class="button-blue">勤務時間追加</button>
-<button class="button-red">勤務時間削除</button>
-</div>
 
 <h2>シフト</h2>
 <div class="button-container">
@@ -107,3 +79,74 @@
 
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
+
+<script>
+  const button1 = document.getElementById('button1');
+  const myForm = document.getElementById('SearchForm');
+  const SearchButton = document.getElementById('SearchButton');
+
+  button1.addEventListener('click', function() {
+    SearchForm.style.display = 'block';
+  });
+
+  SearchButton.addEventListener('click', function() {
+    resultform.style.display = 'block';
+    const formData = new FormData(myForm);
+    for (const [key, value] of formData){
+      httpGet(formData)
+    }
+  });
+
+  function httpGet(query){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function(){
+      if(xmlHttp.readyState == 4 && xmlHttp.status == 200 ){
+          table(xmlHttp.responseText);
+      }else{
+        if(xmlHttp.redyState == 4){
+          dom("SearchResult","エラー")
+        }
+      }
+    }
+    xmlHttp.open("POST", "/search");
+    xmlHttp.send(query);
+  }
+
+  function dom(id, content){
+    document.getElementById(id).innerHTML = content;
+  }
+
+  function table(jsonData){
+    console.log(jsonData)
+    let TA = JSON.parse(jsonData);
+
+    var table = document.createElement("table");
+    var headerRow = table.insertRow();
+    var headerCell = headerRow.insertCell();
+    headerCell = headerRow.insertCell();
+    headerCell.textContent = "学生番号";
+    headerCell = headerRow.insertCell();
+    headerCell.textContent = "名前";
+
+
+
+    for (var i = 0; i < TA.length; i++) {
+      var row = table.insertRow();
+      var checkboxCell = row.insertCell();
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.name = "selected_options";
+      checkbox.value = TA[i].id;
+      checkboxCell.appendChild(checkbox);
+
+      var nameCell = row.insertCell();
+      nameCell.textContent = TA[i].number;
+      var nameCell = row.insertCell();
+      nameCell.textContent = TA[i].name;
+    }
+
+    var container = document.getElementById("tableContainer"); // 表を追加する要素のIDを指定
+    container.innerHTML = "";
+    container.appendChild(table);
+  }
+</script>
