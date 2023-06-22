@@ -65,7 +65,8 @@
   </form>
 </div>
 <div id="SearchResult"></div>
-<form id="resultform" action="/submit" method="post" style="display:none;">
+<form id="resultform" action="/add_TA" method="POST" style="display:none;">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <div id="tableContainer"></div>
   <button type="submit">確定</button>
 </form>
@@ -93,7 +94,8 @@
     resultform.style.display = 'block';
     const formData = new FormData(myForm);
     for (const [key, value] of formData){
-      httpGet(formData)
+      const formData = new FormData(myForm);
+      httpGet(formData);
     }
   });
 
@@ -135,7 +137,7 @@
       var checkboxCell = row.insertCell();
       var checkbox = document.createElement("input");
       checkbox.type = "checkbox";
-      checkbox.name = "selected_options";
+      checkbox.name = "selected_options[]";
       checkbox.value = TA[i].id;
       checkboxCell.appendChild(checkbox);
 
@@ -145,7 +147,7 @@
       nameCell.textContent = TA[i].name;
     }
 
-    var container = document.getElementById("tableContainer"); // 表を追加する要素のIDを指定
+    var container = document.getElementById("tableContainer");
     container.innerHTML = "";
     container.appendChild(table);
   }

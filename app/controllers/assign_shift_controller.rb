@@ -9,4 +9,8 @@ class AssignShiftController < ApplicationController
     @search_result = TeachingAssistant.where("name LIKE ? AND number LIKE ?", "%#{name}%","%#{number}%")
     render json: @search_result
   end
+
+  def add_TA
+    selected_TA = params[:selected_options]
+  end
 end
