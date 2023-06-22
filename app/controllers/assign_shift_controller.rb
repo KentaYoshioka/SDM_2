@@ -1,6 +1,8 @@
 class AssignShiftController < ApplicationController
   def index
   @course = Course.find(params[:course_id])
+  @assignments = Assignment.where(course_id: params[:course_id])
+  @assigned_teaching_assistant = TeachingAssistant.where(id: @assignments.pluck(:teaching_assistant_id))
   end
 
   def search
@@ -12,5 +14,9 @@ class AssignShiftController < ApplicationController
 
   def add_TA
     selected_TA = params[:selected_options]
+    selected_TA.each do |ta_id|
+      Assignment.create(course_id: params[:course_id], teaching_assistant_id: ta_id)
+    end
+    redirect_to request.referrer
   end
 end

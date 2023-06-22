@@ -46,10 +46,32 @@
 </body>
 
 <h2>TA</h2>
+<% if @assigned_teaching_assistant.present? %>
+  <table class="table-container" style="width: 50%">
+  <thead>
+    <tr>
+        <th>学生番号</th>
+        <th>氏名</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% assignment_TA = @assigned_teaching_assistant %>
+    <% @assigned_teaching_assistant.each do |assignment_TA| %>
+      <tr>
+        <td><%= assignment_TA.number %></td>
+        <td><%= assignment_TA.name %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  </table>
+<% end %>
 <div class="button-container">
 <button id="button1" class="button-blue">TA追加</button>
 <button id="button2" class="button-red">TA削除</button>
 </div>
+
+
+
 <div id="displayText"></div>
 
 
@@ -67,6 +89,7 @@
 <div id="SearchResult"></div>
 <form id="resultform" action="/add_TA" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
   <button type="submit">確定</button>
 </form>
