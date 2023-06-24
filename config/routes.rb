@@ -11,6 +11,9 @@ Rails.application.routes.draw do
 
   post '/search', to: "assign_shift#search", as: 'search'
   post '/add_TA', to: "assign_shift#add_TA", as: 'add_TA'
+  post '/delete_TA', to: "assign_shift#delete_TA", as: 'delete_TA'
+  post '/add_work_time', to: "assign_shift#add_work_time", as: 'add_work_time'
+  post '/delete_work_time', to: "assign_shift#delete_work_time", as: 'delete_work_time'
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Defines the root path route ("/")
   # root "articles#index"

@@ -94,6 +94,101 @@
   <button type="submit">確定</button>
 </form>
 
+<form id="delete_TA" action="/delete_TA" method="POST" style="display:none;">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <table>
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>学生番号</th>
+        <th>氏名</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @assigned_teaching_assistant.each do |item| %>
+        <tr>
+          <td><%= check_box_tag 'selected_items[]', item.id %></td>
+          <td><%= item.number %></td>
+          <td><%= item.name %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <button type="submit">確定</button>
+</form>
+
+<h2>勤務時間</h2>
+<% if @work_hour.present? %>
+  <table class="table-container" style="width: 50%">
+  <thead>
+    <tr>
+        <th>開始時刻</th>
+        <th>終了時刻</th>
+        <th>実動時間</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% work_hours = @work_hour %>
+    <% work_hours.each do |work_hour| %>
+      <tr>
+        <td><%= work_hour.start_time %></td>
+        <td><%= work_hour.end_time %></td>
+        <td><%= work_hour.work_time %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  </table>
+<% end %>
+
+<div class="button-container">
+<button id="button3" class="button-blue">勤務時間追加</button>
+<button id="button4" class="button-red">勤務時間削除</button>
+</div>
+<div id="SearchFormContainer">
+  <form id="work_form" action="/add_work_time" method="POST" style="display:none;">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <%= hidden_field_tag :course_id, @course.id %>
+    <label for="date">勤務日</label>
+    <input type="text" id="date" name="date" readonly>
+
+    <label for="start">開始時刻</label>
+    <input type="text" id="start" name="start" readonly>　〜
+
+    <label for="finish">終了時刻</label>
+    <input type="text" id="finish" name="finish" readonly>
+
+    <label for="work_time">実動時間(分)</label>
+    <input type="text" id="work_time" name="work_time">
+
+    <button type="submit" id="work_add">追加</button>
+  </form>
+</div>
+
+<form id="delete_work_time" action="/delete_work_time" method="POST" style="display:none;">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <table>
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>開始時刻</th>
+        <th>終了時刻</th>
+        <th>実動時間</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @work_hour.each do |item| %>
+        <tr>
+          <td><%= check_box_tag 'selected_items[]', item.id %></td>
+          <td><%= item.start_time %></td>
+          <td><%= item.end_time %></td>
+          <td><%= item.work_time %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <button type="submit">確定</button>
+</form>
+
 
 <h2>シフト</h2>
 <div class="button-container">
@@ -104,14 +199,34 @@
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.css">
 <script>
   const button1 = document.getElementById('button1');
+  const button2 = document.getElementById('button2');
+  const button3 = document.getElementById('button3');
+  const button4 = document.getElementById('button4');
+  const deleteForm = document.getElementById('delete_TA');
   const myForm = document.getElementById('SearchForm');
+  const work_form = document.getElementById('work_form');
   const SearchButton = document.getElementById('SearchButton');
 
   button1.addEventListener('click', function() {
     SearchForm.style.display = 'block';
   });
+
+  button2.addEventListener('click', function() {
+    deleteForm.style.display = 'block';
+  });
+
+  button3.addEventListener('click', function() {
+    work_form.style.display = 'block';
+  });
+
+  button4.addEventListener('click', function() {
+    delete_work_time.style.display = 'block';
+  });
+
 
   SearchButton.addEventListener('click', function() {
     resultform.style.display = 'block';
@@ -174,4 +289,22 @@
     container.innerHTML = "";
     container.appendChild(table);
   }
+
+  flatpickr("#date", {
+    dateFormat: "Y-m-d",
+  });
+
+  flatpickr("#start", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+  });
+
+  flatpickr("#finish", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+  });
 </script>
