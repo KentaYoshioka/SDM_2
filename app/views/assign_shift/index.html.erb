@@ -47,7 +47,7 @@
 
 <h2>TA</h2>
 <% if @assigned_teaching_assistant.present? %>
-  <table class="table-container" style="width: 50%">
+  <table class="table-container" style="width: 50%" >
   <thead>
     <tr>
         <th>学生番号</th>
@@ -58,7 +58,7 @@
   <% assignment_TA = @assigned_teaching_assistant %>
     <% @assigned_teaching_assistant.each do |assignment_TA| %>
       <tr>
-        <td><%= assignment_TA.number %></td>
+        <td style="text-align: right;"><%= assignment_TA.number %></td>
         <td><%= assignment_TA.name %></td>
       </tr>
     <% end %>
@@ -93,6 +93,9 @@
   <div id="tableContainer"></div>
   <button type="submit">確定</button>
 </form>
+
+
+
 
 <form id="delete_TA" action="/delete_TA" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>

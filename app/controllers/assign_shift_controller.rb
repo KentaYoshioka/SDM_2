@@ -1,6 +1,6 @@
 class AssignShiftController < ApplicationController
   def index
-    create_initial_work_hour unless Assignment.exists?(course_id: params[:course_id], teaching_assistant_id: -1)
+    create_initial_work_hour unless Assignment.exists?(course_id: params[:course_id], teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
     @course = Course.find(params[:course_id])
     @assignments = Assignment.where(course_id: params[:course_id]).where.not(teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
     @assigned_teaching_assistant = TeachingAssistant.where(id: @assignments.pluck(:teaching_assistant_id))
@@ -14,40 +14,44 @@ class AssignShiftController < ApplicationController
     render json: @search_result
   end
 
+
   def add_TA
     selected_TA = params[:selected_options]
-    selected_TA.each do |ta_id|
-      Assignment.create(course_id: params[:course_id], teaching_assistant_id: ta_id)
-    end
+    Assignment.add_ta(params[:course_id], selected_TA)
     redirect_to request.referrer
   end
 
   def delete_TA
-    selected_TA = params[:selected_items]
-    selected_TA.each do |ta_id|
-      assignment = Assignment.find_by(teaching_assistant_id: ta_id)
-      assignment.destroy if assignment
-    end
+    selected_ta = params[:selected_items]
+    Assignment.delete_ta(selected_ta)
     redirect_to request.referrer
   end
 
   def add_work_time
-    date = Date.parse(params[:date])
-    start = Time.parse(params[:start])
-    finish = Time.parse(params[:finish])
-    start_time = DateTime.new(date.year, date.month, date.day, start.hour, start.min)
-    end_time = DateTime.new(date.year, date.month, date.day, finish.hour, finish.min)
-    work_time = params[:work_time].to_i
-    assignment = Assignment.find_by(course_id: params[:course_id],teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
-    WorkHour.create(start_time: start_time, end_time: end_time, assignment_id: assignment.id, work_time: work_time)
-    redirect_to request.referrer
+    if params[:date].present? && params[:start].present? && params[:finish].present? && params[:work_time].present?
+      date = Date.parse(params[:date])
+      start = Time.parse(params[:start])
+      finish = Time.parse(params[:finish])
+      work_time = params[:work_time].to_i
+      if WorkHour.create_work_hour(date, start, finish, params[:course_id], work_time)
+        redirect_to request.referrer
+      end
+    else
+      puts "日時，実働時間を選択してください．"
+    end
   end
 
+
   def delete_work_time
-    selected_work_time = params[:selected_items]
-    selected_work_time.each do |work_time_id|
-      work=WorkHour.find_by(id: work_time_id.to_i)
-      work.destroy
+    if params[:selected_items].present?
+      selected_work_time = params[:selected_items]
+      selected_work_time.each do |work_time_id|
+        work=WorkHour.find_by(id: work_time_id.to_i)
+        work.destroy
+      end
+    else
+      puts "勤務時間削除の対象が選択されていません．"
+
     end
     redirect_to request.referrer
   end
