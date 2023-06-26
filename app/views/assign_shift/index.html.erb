@@ -74,7 +74,6 @@
 
 <div id="displayText"></div>
 
-
 <div id="SearchFormContainer">
   <form id="SearchForm" style="display:none;" >
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
@@ -131,8 +130,8 @@
   <% work_hours = @work_hour %>
     <% work_hours.each do |work_hour| %>
       <tr>
-        <td><%= work_hour.start_time %></td>
-        <td><%= work_hour.end_time %></td>
+        <td><%= work_hour.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+        <td><%= work_hour.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
         <td><%= work_hour.work_time %></td>
       </tr>
     <% end %>
@@ -191,10 +190,78 @@
 
 
 <h2>シフト</h2>
+<% if @complete_assignment.present? %>
+  <table class="table-container" style="width: 80%">
+  <thead>
+    <tr>
+        <th>学生番号</th>
+        <th>氏名</th>
+        <th>開始時刻</th>
+        <th>終了時刻</th>
+        <th>実動時間(分)</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% complete_assignment = @complete_assignment %>
+    <% complete_assignment.each do |assign| %>
+      <tr>
+        <td><%= assign.assignment.teaching_assistant.number %></td>
+        <td><%= assign.assignment.teaching_assistant.name %></td>
+        <td><%= assign.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+        <td><%= assign.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+        <td><%= assign.work_time %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  </table>
+<% end %>
 <div class="button-container">
-<button class="button-blue" class="centered-text">シフト追加</button>
-<button class="button-red" class="centered-text">シフト削除</button>
+<button id = 'button5' class="button-blue" class="centered-text">シフト追加</button>
+<button id = 'button6' class="button-red" class="centered-text">シフト削除</button>
 </div>
+<div id="SearchFormContainer">
+  <form id="add_assignment" action="/add_assignment" method="POST" style="display:none;">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <%= hidden_field_tag :course_id, @course.id %>
+
+    <label for="teaching_assistant_id">TA:</label>
+   <%= select_tag :teaching_assistant_id, options_for_select(@assigned_teaching_assistant.pluck(:id, :name, :number).map { |id, name, number| ["#{name} （#{number}）", id] }) %>
+
+  <label for="work_hour_id">勤務時間:</label>
+    <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
+
+    <button type="submit" >確定</button>
+  </form>
+</div>
+
+<form id="delete_assignment" action="/delete_assgnment" method="POST" style="display:none;">
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <table>
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>学生番号</th>
+        <th>氏名</th>
+        <th>開始時刻</th>
+        <th>終了時刻</th>
+        <th>実動時間(分)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @complete_assignment.each do |assign| %>
+        <tr>
+          <td><%= check_box_tag 'selected_items[]', assign.id %></td>
+          <td><%= assign.assignment.teaching_assistant.number %></td>
+          <td><%= assign.assignment.teaching_assistant.name %></td>
+          <td><%= assign.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+          <td><%= assign.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+          <td><%= assign.work_time %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  <button type="submit">確定</button>
+</form>
 
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
@@ -206,27 +273,42 @@
   const button2 = document.getElementById('button2');
   const button3 = document.getElementById('button3');
   const button4 = document.getElementById('button4');
+  const button5 = document.getElementById('button5');
+  const button6 = document.getElementById('button6');
   const deleteForm = document.getElementById('delete_TA');
   const myForm = document.getElementById('SearchForm');
   const work_form = document.getElementById('work_form');
+  const delete_assignment = document.getElementById('delete_assignment');
+  const add_assignment = document.getElementById('add_assignment');
   const SearchButton = document.getElementById('SearchButton');
 
   button1.addEventListener('click', function() {
     SearchForm.style.display = 'block';
+    deleteForm.style.display = 'none';
   });
 
   button2.addEventListener('click', function() {
     deleteForm.style.display = 'block';
+    SearchForm.style.display = 'none';
   });
 
   button3.addEventListener('click', function() {
     work_form.style.display = 'block';
+    delete_work_time.style.display = 'none';
   });
 
   button4.addEventListener('click', function() {
     delete_work_time.style.display = 'block';
+    work_form.style.display = 'none';
   });
 
+  button5.addEventListener('click', function() {
+    add_assignment.style.display = 'block';
+  });
+
+  button6.addEventListener('click', function() {
+    delete_assignment.style.display = 'block';
+  });
 
   SearchButton.addEventListener('click', function() {
     resultform.style.display = 'block';
