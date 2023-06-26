@@ -1,5 +1,8 @@
 class AssignShiftController < ApplicationController
   def index
+    unless TeachingAssistant.find_by(description: "dammy")
+      TeachingAssistant.create(description: "dammy")
+    end
     create_initial_work_hour unless Assignment.exists?(course_id: params[:course_id], teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
     @course = Course.find(params[:course_id])
     @assignments = Assignment.where(course_id: params[:course_id]).where.not(teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
@@ -79,9 +82,6 @@ class AssignShiftController < ApplicationController
   private
 
   def create_initial_work_hour
-    unless TeachingAssistant.find_by(description: "dammy")
-      TeachingAssistant.create(description: "dammy")
-    end
     Assignment.create(course_id: params[:course_id],teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
   end
 end
