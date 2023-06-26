@@ -5,6 +5,7 @@ class AssignShiftController < ApplicationController
     @assignments = Assignment.where(course_id: params[:course_id]).where.not(teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
     @assigned_teaching_assistant = TeachingAssistant.where(id: @assignments.pluck(:teaching_assistant_id))
     @work_hour = WorkHour.where(assignment_id: Assignment.find_by(course_id: params[:course_id]))
+    @complete_assignment = WorkHour.joins(assignment: :teaching_assistant).where.not(assignments: { id: nil }).where.not(assignments: { teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id })
   end
 
   def search
@@ -56,6 +57,25 @@ class AssignShiftController < ApplicationController
     redirect_to request.referrer
   end
 
+  def add_assignment
+    teaching_assistant = params[:teaching_assistant_id]
+    work_hour_id = params[:work_hour_id].to_i
+    assignment = Assignment.find_by(course_id: params[:course_id], teaching_assistant_id: teaching_assistant)
+    work_hour = WorkHour.find_by(id: work_hour_id)
+    WorkHour.create(start_time: work_hour.start_time, end_time: work_hour.end_time, assignment_id: assignment.id,work_time: work_hour.work_time)
+    redirect_to request.referrer
+  end
+
+  def delete_assgnment
+    selected_assign = params[:selected_items]
+    selected_assign.each do |work_time_id|
+      work=WorkHour.find_by(id: work_time_id.to_i)
+      work.destroy
+    end
+    redirect_to request.referrer
+  end
+
+
   private
 
   def create_initial_work_hour
@@ -64,5 +84,4 @@ class AssignShiftController < ApplicationController
     end
     Assignment.create(course_id: params[:course_id],teaching_assistant_id: TeachingAssistant.find_by(description: "dammy").id)
   end
-
 end
