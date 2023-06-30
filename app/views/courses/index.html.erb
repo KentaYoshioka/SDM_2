@@ -22,7 +22,7 @@
             <td><%= link_to course.name,assign_shift_index_path(course_id: course.id)%></td>
             <td><%= course.instructor%></td>
             <td style="text-align: right;"><%= course.time_budget%></td>
-            <td style="text-align: right;">0</td>
+            <td style="text-align: right;"><%= calc_time_allcation(course)%></td>
             <td style="width: 300px"><%= course.description%></td>
 
         </tr>
