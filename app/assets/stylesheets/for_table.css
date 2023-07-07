@@ -36,3 +36,48 @@
 
 
 
+  .scrollable-table {
+    margin-bottom: 20px;
+    border-spacing: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+
+  .scrollable-table-wrapper {
+    max-height: 300px; /* 必要な高さを指定 */
+    overflow-y: auto;
+  }
+
+  .scrollable-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .scrollable-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f7f7f7;
+  }
+
+  .scrollable-table th,
+  .scrollable-table td {
+    padding: 4px;
+    border: 1px solid #ccc;
+  }
+
+  .scrollable-table-wrapper {
+    max-height: 200px; /* 必要な高さを指定 */
+    overflow: auto;
+  }
+
+
+
+
+
+
+
+
+
+
+
