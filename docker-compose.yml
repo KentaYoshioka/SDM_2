@@ -1,0 +1,14 @@
+version: '3'
+# docker-composeの書式のバージョンを指定します。(原則、最新を指定する)
+
+services:
+  myapp:
+    build:
+      context: .
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+    working_dir: /app
+    tty: true
+
