@@ -16,6 +16,11 @@ Rails.application.routes.draw do
   post '/delete_work_time', to: "assign_shift#delete_work_time", as: 'delete_work_time'
   post '/add_assignment', to: "assign_shift#add_assignment", as: 'add_assignment'
   post '/delete_assgnment', to: "assign_shift#delete_assgnment", as: 'delete_assgnment'
+  get '/show_reports', to: 'show_reports#index'
+  get '/show_reports/search', to: 'show_reports#search'
+  get '/show_reports/write_excel1', to: 'show_reports#write_excel1'
+  get '/show_reports/write_excel2', to: 'show_reports#write_excel2'
+  get '/download_excel', to: 'show_reports#download_excel', as: 'download_excel'
   
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
   # Defines the root path route ("/")
