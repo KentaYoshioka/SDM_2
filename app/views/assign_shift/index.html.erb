@@ -90,6 +90,7 @@
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
+  <div id="messageContainer_sub"></div>
   <button type="submit">確定</button>
 </form>
 
@@ -98,7 +99,8 @@
 
 <form id="delete_TA" action="/delete_TA" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <table>
+  <div class="message">削除する学生を選択してください</div>
+  <table class="table-container" style="width: 50%">
     <thead>
       <tr>
         <th>選択</th>
@@ -116,6 +118,7 @@
       <% end %>
     </tbody>
   </table>
+  <div id="messageContainer_1"></div>
   <button type="submit">確定</button>
 </form>
 
@@ -168,7 +171,8 @@
 
 <form id="delete_work_time" action="/delete_work_time" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <table>
+  <div class="message">削除する勤務時間を選択してください</div>
+  <table class="table-container" style="width: 50%">
     <thead>
       <tr>
         <th>選択</th>
@@ -188,6 +192,7 @@
       <% end %>
     </tbody>
   </table>
+  <div id="messageContainer_2"></div>
   <button type="submit">確定</button>
 </form>
 
@@ -239,7 +244,9 @@
 
 <form id="delete_assignment" action="/delete_assgnment" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <table>
+  <div class="message">削除するシフトを選択してください</div>
+
+  <table class="table-container" style="width: 50%">
     <thead>
       <tr>
         <th>選択</th>
@@ -263,11 +270,13 @@
       <% end %>
     </tbody>
   </table>
+  <div id="messageContainer_3"></div>
   <button type="submit">確定</button>
 </form>
 
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
+
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.9/dist/flatpickr.min.css">
@@ -322,58 +331,135 @@
     }
   });
 
-  function httpGet(query){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function(){
-      if(xmlHttp.readyState == 4 && xmlHttp.status == 200 ){
-          table(xmlHttp.responseText);
-      }else{
-        if(xmlHttp.redyState == 4){
-          dom("SearchResult","エラー")
+
+/********************************************************エラーメッセージ出力関数*******************************************************/
+function errorMessage(formId, messageContainerId, errorMessage) {
+  var form = document.getElementById(formId);
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault(); // フォームのデフォルトの送信をキャンセル
+
+    var selectedItems = Array.from(document.querySelectorAll('input[name="selected_items[]"]:checked'))
+      .map(function(checkbox) {
+        return checkbox.value;
+      });
+
+    if (selectedItems.length === 0) {
+      var errorDiv = document.getElementById(messageContainerId).querySelector('.error-message');
+      if (!errorDiv) {
+        errorDiv = document.createElement("div");
+        errorDiv.textContent = errorMessage;
+        errorDiv.classList.add("error-message");
+        document.getElementById(messageContainerId).appendChild(errorDiv);
+      }
+    } else {
+      var formData = new FormData(this);
+
+      var xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            // レスポンスが成功した場合の処理...
+            location.reload(); // ページをリロードして結果を表示するなどの処理を行う
+          } else if (xhr.status === 422) {
+            var response = JSON.parse(xhr.responseText);
+            if (response.hasOwnProperty('error')) {
+              var errorDiv = document.getElementById(messageContainerId).querySelector('.error-message');
+              if (!errorDiv) {
+                errorDiv = document.createElement("div");
+                errorDiv.classList.add("error-message");
+                document.getElementById(messageContainerId).appendChild(errorDiv);
+              }
+              errorDiv.textContent = response.error;
+            }
+          }
+        }
+      };
+
+      xhr.open('POST', this.action);
+      xhr.setRequestHeader('X-CSRF-Token', '<%= form_authenticity_token %>');
+      xhr.send(formData);
+    }
+  });
+}
+/**********************************************************************************************************************/
+// 使用例
+// errorMessage(アクション名，ID，出力するメッセージ)
+errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません．");
+errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
+errorMessage("delete_assgnment", "messageContainer_3", "削除するシフトが選択されていません．");
+
+
+
+
+function httpGet(query) {
+  var xmlHttp = new XMLHttpRequest();
+  xmlHttp.onreadystatechange = function() {
+    if (xmlHttp.readyState == 4) {
+      if (xmlHttp.status == 200) {
+        table(xmlHttp.responseText);
+        resultform.style.display = 'block';
+      } else if (xmlHttp.status == 422) {
+        var response = JSON.parse(xmlHttp.responseText);
+        if (response.hasOwnProperty('error')) {
+          var container = document.getElementById("tableContainer");
+          container.innerHTML = '<div class="error-message">' + response.error + '</div>';;
         }
       }
     }
-    xmlHttp.open("POST", "/search");
-    xmlHttp.send(query);
-  }
+  };
+  xmlHttp.open("POST", "/search");
+  xmlHttp.send(query);
+}
 
-  function dom(id, content){
+
+
+
+function dom(id, content){
     document.getElementById(id).innerHTML = content;
-  }
+}
 
-  function table(jsonData){
-    console.log(jsonData)
-    let TA = JSON.parse(jsonData);
+function table(jsonData) {
+let TA = JSON.parse(jsonData);
+var table = document.createElement("table");
+table.classList.add("scrollable-table"); // テーブルにクラスを追加
 
-    var table = document.createElement("table");
-    var headerRow = table.insertRow();
-    var headerCell = headerRow.insertCell();
-    headerCell = headerRow.insertCell();
-    headerCell.textContent = "学生番号";
-    headerCell = headerRow.insertCell();
-    headerCell.textContent = "名前";
+var headerRow = table.insertRow();
+var headerCell = headerRow.insertCell();
+headerCell = headerRow.insertCell();
+headerCell.textContent = "学生番号";
+headerCell.classList.add("scrollable-table"); // ヘッダーセルにクラスを追加
+headerCell = headerRow.insertCell();
+headerCell.classList.add("scrollable-table"); // ヘッダーセルにクラスを追加
+headerCell.textContent = "名前";
 
+var tbody = document.createElement("tbody");
+for (var i = 0; i < TA.length; i++) {
+  var row = table.insertRow();
+  var checkboxCell = row.insertCell();
+  var checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.name = "selected_options[]";
+  checkbox.value = TA[i].id;
+  checkboxCell.appendChild(checkbox);
+  checkbox.classList.add("scrollable-table"); // データセルにクラスを追加
 
+  var nameCell = row.insertCell();
+  nameCell.textContent = TA[i].number;
+  nameCell = row.insertCell();
+  nameCell.textContent = TA[i].name;
+  nameCell.classList.add("scrollable-table"); // データセルにクラスを追加
+}
 
-    for (var i = 0; i < TA.length; i++) {
-      var row = table.insertRow();
-      var checkboxCell = row.insertCell();
-      var checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.name = "selected_options[]";
-      checkbox.value = TA[i].id;
-      checkboxCell.appendChild(checkbox);
+var tableWrapper = document.createElement("div");
+tableWrapper.classList.add("scrollable-table-wrapper");
+tableWrapper.appendChild(table);
 
-      var nameCell = row.insertCell();
-      nameCell.textContent = TA[i].number;
-      var nameCell = row.insertCell();
-      nameCell.textContent = TA[i].name;
-    }
+var container = document.getElementById("tableContainer");
+container.innerHTML = "";
+container.appendChild(tableWrapper);
+}
 
-    var container = document.getElementById("tableContainer");
-    container.innerHTML = "";
-    container.appendChild(table);
-  }
 
   flatpickr("#date", {
     dateFormat: "Y-m-d",

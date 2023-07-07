@@ -1,0 +1,11 @@
+.over-allocated {
+    background-color: #ef7676d8;
+  }
+
+  .error-message {
+    color: #FF0000;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+
