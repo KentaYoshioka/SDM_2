@@ -119,7 +119,7 @@
     </tbody>
   </table>
   <div id="messageContainer_1"></div>
-  <button type="submit">確定</button>
+  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
 
 <h2>勤務時間</h2>
@@ -185,8 +185,8 @@
       <% @work_hour.each do |item| %>
         <tr>
           <td><%= check_box_tag 'selected_items[]', item.id %></td>
-          <td><%= item.start_time %></td>
-          <td><%= item.end_time %></td>
+          <td><%= item.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+          <td><%= item.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
           <td><%= item.work_time %></td>
         </tr>
       <% end %>
@@ -403,7 +403,7 @@ function errorMessage(formId, messageContainerId, errorMessage) {
 /**********************************************************************************************************************/
 // 使用例
 // errorMessage(アクション名，ID，出力するメッセージ)
-errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません．");
+errorMessage("delete_ta_botton", "messageContainer_1", "削除するTAが選択されていません．");
 errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
 errorMessage("delete_assgnment", "messageContainer_3", "削除するシフトが選択されていません．");
 
