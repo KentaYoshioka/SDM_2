@@ -91,7 +91,7 @@
   <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
   <div id="messageContainer_sub"></div>
-  <button type="submit">確定</button>
+  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
 
 
@@ -332,6 +332,24 @@
   });
 
 
+  flatpickr("#date", {
+    dateFormat: "Y-m-d",
+  });
+
+  flatpickr("#start", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+  });
+
+  flatpickr("#finish", {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+  });
+
 /********************************************************エラーメッセージ出力関数*******************************************************/
 function errorMessage(formId, messageContainerId, errorMessage) {
   var form = document.getElementById(formId);
@@ -428,9 +446,9 @@ var headerRow = table.insertRow();
 var headerCell = headerRow.insertCell();
 headerCell = headerRow.insertCell();
 headerCell.textContent = "学生番号";
-headerCell.classList.add("scrollable-table"); // ヘッダーセルにクラスを追加
+headerCell.classList.add("scrollable-table");
 headerCell = headerRow.insertCell();
-headerCell.classList.add("scrollable-table"); // ヘッダーセルにクラスを追加
+headerCell.classList.add("scrollable-table");
 headerCell.textContent = "名前";
 
 var tbody = document.createElement("tbody");
@@ -442,13 +460,13 @@ for (var i = 0; i < TA.length; i++) {
   checkbox.name = "selected_options[]";
   checkbox.value = TA[i].id;
   checkboxCell.appendChild(checkbox);
-  checkbox.classList.add("scrollable-table"); // データセルにクラスを追加
+  checkbox.classList.add("scrollable-table");
 
   var nameCell = row.insertCell();
   nameCell.textContent = TA[i].number;
   nameCell = row.insertCell();
   nameCell.textContent = TA[i].name;
-  nameCell.classList.add("scrollable-table"); // データセルにクラスを追加
+  nameCell.classList.add("scrollable-table");
 }
 
 var tableWrapper = document.createElement("div");
@@ -460,22 +478,4 @@ container.innerHTML = "";
 container.appendChild(tableWrapper);
 }
 
-
-  flatpickr("#date", {
-    dateFormat: "Y-m-d",
-  });
-
-  flatpickr("#start", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-  });
-
-  flatpickr("#finish", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-  });
 </script>
