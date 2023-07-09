@@ -90,7 +90,7 @@
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
-  <div id="messageContainer_sub"></div>
+  <div id="messageContainer_4"></div>
   <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
 
@@ -274,6 +274,7 @@
   <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
 
+
 <p><%= link_to '科目一覧画面', '/courses/index' %></p>
 <p><%= link_to '帳票表示画面', '/show_reports/index' %></p>
 
@@ -289,6 +290,7 @@
   const button6 = document.getElementById('button6');
   const deleteForm = document.getElementById('delete_TA');
   const myForm = document.getElementById('SearchForm');
+  const resultForm = document.getElementById('resultform');
   const work_form = document.getElementById('work_form');
   const delete_assignment = document.getElementById('delete_assignment');
   const add_assignment = document.getElementById('add_assignment');
@@ -302,6 +304,7 @@
   button2.addEventListener('click', function() {
     deleteForm.style.display = 'block';
     SearchForm.style.display = 'none';
+    resulForm.style.display = 'none';
   });
 
   button3.addEventListener('click', function() {
@@ -316,10 +319,12 @@
 
   button5.addEventListener('click', function() {
     add_assignment.style.display = 'block';
+    delete_assignment.style.display = 'none';
   });
 
   button6.addEventListener('click', function() {
     delete_assignment.style.display = 'block';
+    add_assignment.style.display = 'none';
   });
 
   SearchButton.addEventListener('click', function() {
@@ -403,9 +408,11 @@ function errorMessage(formId, messageContainerId, errorMessage) {
 /**********************************************************************************************************************/
 // 使用例
 // errorMessage(アクション名，ID，出力するメッセージ)
-errorMessage("delete_ta_botton", "messageContainer_1", "削除するTAが選択されていません．");
+errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません．");
 errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
-errorMessage("delete_assgnment", "messageContainer_3", "削除するシフトが選択されていません．");
+errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません．");
+//errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません．");
+
 
 
 
