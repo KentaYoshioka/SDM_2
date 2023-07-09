@@ -27,9 +27,10 @@ class AssignShiftController < ApplicationController
 
 
   def add_TA
-    selected_TA = params[:selected_options]
+    selected_TA = params[:selected_items]
+    puts selected_TA
     if selected_TA.nil?
-      render json: { error: '対象者が選択されていません．' }, status: :bad_request
+      render json: { error: '対象者が選択されていません．' }, status: :unprocessable_entity
     else
       Assignment.add_ta(params[:course_id], selected_TA)
       redirect_to request.referrer

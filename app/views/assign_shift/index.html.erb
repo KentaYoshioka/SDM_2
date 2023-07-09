@@ -85,7 +85,8 @@
     <button type="button" id = "SearchButton" >検索</button>
   </form>
 </div>
-<div id="SearchResult"></div>
+
+<div id="SearchResult">
 <form id="resultform" action="/add_TA" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <%= hidden_field_tag :course_id, @course.id %>
@@ -93,6 +94,7 @@
   <div id="messageContainer_4"></div>
   <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
+</div>
 
 
 
@@ -304,7 +306,7 @@
   button2.addEventListener('click', function() {
     deleteForm.style.display = 'block';
     SearchForm.style.display = 'none';
-    resulForm.style.display = 'none';
+    resultForm.style.display = 'none';
   });
 
   button3.addEventListener('click', function() {
@@ -328,7 +330,7 @@
   });
 
   SearchButton.addEventListener('click', function() {
-    resultform.style.display = 'block';
+    resultForm.style.display = 'block';
     const formData = new FormData(myForm);
     for (const [key, value] of formData){
       const formData = new FormData(myForm);
@@ -367,6 +369,7 @@ function errorMessage(formId, messageContainerId, errorMessage) {
         return checkbox.value;
       });
 
+
     if (selectedItems.length === 0) {
       var errorDiv = document.getElementById(messageContainerId).querySelector('.error-message');
       if (!errorDiv) {
@@ -375,43 +378,21 @@ function errorMessage(formId, messageContainerId, errorMessage) {
         errorDiv.classList.add("error-message");
         document.getElementById(messageContainerId).appendChild(errorDiv);
       }
-    } else {
-      var formData = new FormData(this);
-
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-          if (xhr.status === 200) {
-            // レスポンスが成功した場合の処理...
-            location.reload(); // ページをリロードして結果を表示するなどの処理を行う
-          } else if (xhr.status === 422) {
-            var response = JSON.parse(xhr.responseText);
-            if (response.hasOwnProperty('error')) {
-              var errorDiv = document.getElementById(messageContainerId).querySelector('.error-message');
-              if (!errorDiv) {
-                errorDiv = document.createElement("div");
-                errorDiv.classList.add("error-message");
-                document.getElementById(messageContainerId).appendChild(errorDiv);
-              }
-              errorDiv.textContent = response.error;
-            }
-          }
-        }
-      };
-
-      xhr.open('POST', this.action);
-      xhr.setRequestHeader('X-CSRF-Token', '<%= form_authenticity_token %>');
-      xhr.send(formData);
+      return; // エラーメッセージを表示した後、ここで処理を終了してフォームの送信をブロックする
     }
+
+    // 条件が満たされた場合は、通常のフォームの送信を行う
+    this.submit();
   });
 }
+
 /**********************************************************************************************************************/
 // 使用例
 // errorMessage(アクション名，ID，出力するメッセージ)
 errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません．");
 errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
 errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません．");
-//errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません．");
+errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません．");
 
 
 
@@ -464,7 +445,7 @@ for (var i = 0; i < TA.length; i++) {
   var checkboxCell = row.insertCell();
   var checkbox = document.createElement("input");
   checkbox.type = "checkbox";
-  checkbox.name = "selected_options[]";
+  checkbox.name = "selected_items[]";
   checkbox.value = TA[i].id;
   checkboxCell.appendChild(checkbox);
   checkbox.classList.add("scrollable-table");
