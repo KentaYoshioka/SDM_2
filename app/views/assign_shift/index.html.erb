@@ -91,8 +91,8 @@
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
+   <div id="messageContainer_4"></div>
    <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;" id="search_b">確定</button>
-  <div id="messageContainer_4"></div>
 </form>
 </div>
 
@@ -101,27 +101,31 @@
 
 <form id="delete_TA" action="/delete_TA" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <div class="message">削除する学生を選択してください</div>
-  <table class="table-container" style="width: 50%">
-    <thead>
-      <tr>
-        <th>選択</th>
-        <th>学生番号</th>
-        <th>氏名</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @assigned_teaching_assistant.each do |item| %>
+  <% if @assigned_teaching_assistant.present? %>
+    <div class="message">削除する学生を選択してください</div>
+    <table class="table-container" style="width: 50%">
+      <thead>
         <tr>
-          <td><%= check_box_tag 'selected_items[]', item.id %></td>
-          <td><%= item.number %></td>
-          <td><%= item.name %></td>
+          <th>選択</th>
+          <th>学生番号</th>
+          <th>氏名</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <div id="messageContainer_1"></div>
-  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+      </thead>
+      <tbody>
+        <% @assigned_teaching_assistant.each do |item| %>
+          <tr>
+            <td><%= check_box_tag 'selected_items[]', item.id %></td>
+            <td><%= item.number %></td>
+            <td><%= item.name %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div id="messageContainer_1"></div>
+    <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+  <% else %>
+    <div class="error-message" >割り当てられているTAは存在しません</div>
+  <% end %>
 </form>
 
 <h2>勤務時間</h2>
@@ -173,30 +177,35 @@
 
 <form id="delete_work_time" action="/delete_work_time" method="POST" style="display:none;">
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <div class="message">削除する勤務時間を選択してください</div>
-  <table class="table-container" style="width: 50%">
-    <thead>
-      <tr>
-        <th>選択</th>
-        <th>開始時刻</th>
-        <th>終了時刻</th>
-        <th>実動時間</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @work_hour.each do |item| %>
+  <% if @work_hour.present? %>
+    <div class="message">削除する勤務時間を選択してください</div>
+    <table class="table-container" style="width: 50%">
+      <thead>
         <tr>
-          <td><%= check_box_tag 'selected_items[]', item.id %></td>
-          <td><%= item.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
-          <td><%= item.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
-          <td><%= item.work_time %></td>
+          <th>選択</th>
+          <th>開始時刻</th>
+          <th>終了時刻</th>
+          <th>実動時間</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <div id="messageContainer_2"></div>
-  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+      </thead>
+      <tbody>
+        <% @work_hour.each do |item| %>
+          <tr>
+            <td><%= check_box_tag 'selected_items[]', item.id %></td>
+            <td><%= item.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+            <td><%= item.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+            <td><%= item.work_time %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div id="messageContainer_2"></div>
+    <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+  <% else %>
+    <div class="error-message">割り当てられている勤務時間は存在しません</div>
+  <% end %>
 </form>
+
 
 
 <h2>シフト</h2>
@@ -231,49 +240,61 @@
 </div>
 <div id="SearchFormContainer">
   <form id="add_assignment" action="/add_assignment" method="POST" style="display:none;">
-    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-    <%= hidden_field_tag :course_id, @course.id %>
+  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <%= hidden_field_tag :course_id, @course.id %>
+  <% if @work_hour.present? %>
+      <% if @assigned_teaching_assistant.present? %>
 
-    <label for="teaching_assistant_id">TA:</label>
-   <%= select_tag :teaching_assistant_id, options_for_select(@assigned_teaching_assistant.pluck(:id, :name, :number).map { |id, name, number| ["#{name} （#{number}）", id] }) %>
+          <label for="teaching_assistant_id">TA:</label>
+        <%= select_tag :teaching_assistant_id, options_for_select(@assigned_teaching_assistant.pluck(:id, :name, :number).map { |id, name, number| ["#{name} （#{number}）", id] }) %>
 
-  <label for="work_hour_id">勤務時間:</label>
-    <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
-
-    <button type="submit" >確定</button>
+        <label for="work_hour_id">勤務時間:</label>
+          <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
+          <button type="submit" >確定</button>
+          <div id="messageContainer_5"></div>
+      <% else %>
+        <div class="error-message">科目にTAを割り当ててください</div>
+      <% end %>
+    <% else %>
+      <div class="error-message">科目に勤務時間を割り当ててください</div>
+    <% end %>
   </form>
 </div>
 
 <form id="delete_assignment" action="/delete_assgnment" method="POST" style="display:none;">
-  <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
-  <div class="message">削除するシフトを選択してください</div>
+<%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+  <% if @complete_assignment.present? %>
+    <div class="message">削除するシフトを選択してください</div>
 
-  <table class="table-container" style="width: 50%">
-    <thead>
-      <tr>
-        <th>選択</th>
-        <th>学生番号</th>
-        <th>氏名</th>
-        <th>開始時刻</th>
-        <th>終了時刻</th>
-        <th>実動時間(分)</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @complete_assignment.each do |assign| %>
+    <table class="table-container" style="width: 50%">
+      <thead>
         <tr>
-          <td><%= check_box_tag 'selected_items[]', assign.id %></td>
-          <td><%= assign.assignment.teaching_assistant.number %></td>
-          <td><%= assign.assignment.teaching_assistant.name %></td>
-          <td><%= assign.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
-          <td><%= assign.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
-          <td><%= assign.work_time %></td>
+          <th>選択</th>
+          <th>学生番号</th>
+          <th>氏名</th>
+          <th>開始時刻</th>
+          <th>終了時刻</th>
+          <th>実動時間(分)</th>
         </tr>
-      <% end %>
-    </tbody>
-  </table>
-  <div id="messageContainer_3"></div>
-  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+      </thead>
+      <tbody>
+        <% @complete_assignment.each do |assign| %>
+          <tr>
+            <td><%= check_box_tag 'selected_items[]', assign.id %></td>
+            <td><%= assign.assignment.teaching_assistant.number %></td>
+            <td><%= assign.assignment.teaching_assistant.name %></td>
+            <td><%= assign.start_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+            <td><%= assign.end_time.strftime('%Y年%m月%d日 %H:%M') %></td>
+            <td><%= assign.work_time %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <div id="messageContainer_3"></div>
+    <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
+  <% else %>
+    <div class="error-message">割り当てられているシフトは存在しません</div>
+  <% end %>
 </form>
 
 
@@ -298,36 +319,56 @@
   const add_assignment = document.getElementById('add_assignment');
   const SearchButton = document.getElementById('SearchButton');
   const SubmitButton = document.getElementById('search_b');
+  var messageContainer_1 = document.getElementById("messageContainer_1")
+  var messageContainer_2 = document.getElementById("messageContainer_2")
+  var messageContainer_3 = document.getElementById("messageContainer_3")
+
+
 
   button1.addEventListener('click', function() {
     SearchForm.style.display = 'block';
     deleteForm.style.display = 'none';
+    messageContainer_1.innerHTML = '';
+    messageContainer_2.innerHTML = '';
+    messageContainer_3.innerHTML = '';
   });
 
   button2.addEventListener('click', function() {
     deleteForm.style.display = 'block';
     SearchForm.style.display = 'none';
     resultForm.style.display = 'none';
+    messageContainer_2.innerHTML = '';
+    messageContainer_3.innerHTML = '';
   });
 
   button3.addEventListener('click', function() {
     work_form.style.display = 'block';
     delete_work_time.style.display = 'none';
+    messageContainer_1.innerHTML = '';
+    messageContainer_2.innerHTML = '';
+    messageContainer_3.innerHTML = '';
   });
 
   button4.addEventListener('click', function() {
     delete_work_time.style.display = 'block';
     work_form.style.display = 'none';
+    messageContainer_1.innerHTML = '';
+    messageContainer_3.innerHTML = '';
   });
 
   button5.addEventListener('click', function() {
     add_assignment.style.display = 'block';
     delete_assignment.style.display = 'none';
+    messageContainer_1.innerHTML = '';
+    messageContainer_2.innerHTML = '';
+    messageContainer_3.innerHTML = '';
   });
 
   button6.addEventListener('click', function() {
     delete_assignment.style.display = 'block';
     add_assignment.style.display = 'none';
+    messageContainer_1.innerHTML = '';
+    messageContainer_2.innerHTML = '';
   });
 
   SearchButton.addEventListener('click', function() {
@@ -338,7 +379,6 @@
       httpGet(formData);
     }
   });
-
 
   flatpickr("#date", {
     dateFormat: "Y-m-d",
@@ -387,6 +427,8 @@ function errorMessage(formId, messageContainerId, errorMessage) {
   });
 }
 
+
+
 /**********************************************************************************************************************/
 // 使用例
 // errorMessage(アクション名，ID，出力するメッセージ)
@@ -394,7 +436,6 @@ errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択され�
 errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
 errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません．");
 errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません．");
-
 
 
 
