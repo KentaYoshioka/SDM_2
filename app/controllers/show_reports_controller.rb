@@ -6,14 +6,20 @@ class ShowReportsController < ApplicationController
   end
 
   def search
-    if params[:word_number].present?
+    if params[:word_number].present? && params[:word_number].length < 128
       @word = params[:word_number]
       @teachingassistants = TeachingAssistant.where("number LIKE ?", "%#{@word}%")
-    elsif params[:word_name].present?
+      if @teachingassistants.empty?
+        @message= "該当するデータがありません。"
+     end
+    elsif params[:word_name].present? && params[:word_name].length < 128
       @word = params[:word_name]
       @teachingassistants = TeachingAssistant.where("name LIKE ?", "%#{@word}%")
+      if @teachingassistants.empty?
+        @message= "該当するデータがありません。"
+     end
     else
-      @teachingassistants = TeachingAssistant.all
+      @message = "入力に異常があります"
     end
 
     render 'show_reports/index'
@@ -86,7 +92,6 @@ class ShowReportsController < ApplicationController
     end
     workbook.write('app/assets/excel/write_report1.xlsx')
     session[:file_path] = 'app/assets/excel/write_report1.xlsx'
-    #session[:file_path] = 'public/write_report1.xlsx'
     redirect_to download_excel_path
   end
   def write_excel2
@@ -108,8 +113,6 @@ class ShowReportsController < ApplicationController
     end
     workbook.write('app/assets/excel/write_report2.xlsx')
     session[:file_path] = 'app/assets/excel/write_report2.xlsx'  
-    #excel_to_pdf('app/assets/excel/write_report2.xlsx', 'app/assets/pdf/write_report2.pdf')
-
     redirect_to download_excel_path
   end
   def download_excel
