@@ -251,7 +251,6 @@
         <label for="work_hour_id">勤務時間:</label>
           <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
           <button type="submit" >確定</button>
-          <div id="messageContainer_5"></div>
       <% else %>
         <div class="error-message">科目にTAを割り当ててください</div>
       <% end %>
