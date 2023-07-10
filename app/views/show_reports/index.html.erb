@@ -6,7 +6,6 @@
 </div>
 
 <div id="SearchFormContainer" style="text-align: center;">
-  <%# <form id="SearchForm" action="/show_reports/search" method="POST"> %>
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
     <label for="number">学生番号:</label>
@@ -38,13 +37,12 @@
           <%= teachingassistant.number %>
           <%= link_to '様式１', show_reports_write_excel1_path(student_id: teachingassistant.number) %>
           <%= link_to '様式2', show_reports_write_excel2_path(student_id: teachingassistant.number) %>
-          <%# <%= button_to "様式１", '/show_reports/write_excel?id=' + @student_number, method: :get, class: "btn btn-primary", style: "margin: 20px auto 0;" %>
           </td>
         </tr>
       <% end %>
     <% else %>
       <tr>
-        <td>No teaching assistants found.</td>
+        <td><%= @message %></td>
       </tr>
     <% end %>
   </tbody>
