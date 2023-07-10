@@ -256,7 +256,11 @@
         <div class="error-message">科目にTAを割り当ててください</div>
       <% end %>
     <% else %>
-      <div class="error-message">科目に勤務時間を割り当ててください</div>
+      <% if @assigned_teaching_assistant.present? %>
+        <div class="error-message">科目に勤務時間を割り当ててください</div>
+      <% else %>
+        <div class="error-message">科目にTA, 勤務時間を割り当ててください</div>
+      <% end %>
     <% end %>
   </form>
 </div>
