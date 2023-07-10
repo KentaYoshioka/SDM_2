@@ -3,7 +3,7 @@ up:
 	docker compose up -d
 
 setup:
-	docker-compose build
+	docker compose build
 	docker compose exec myapp bash -c 'bundle exec rails db:migrate'
 	docker compose exec myapp bash -c 'bundle exec rake import:all'
 
