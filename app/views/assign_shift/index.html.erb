@@ -91,8 +91,8 @@
   <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
   <%= hidden_field_tag :course_id, @course.id %>
   <div id="tableContainer"></div>
+   <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;" id="search_b">確定</button>
   <div id="messageContainer_4"></div>
-  <button type="submit" style="display: block; margin: 0 auto; width: 100px; height: 25px;">確定</button>
 </form>
 </div>
 
@@ -226,7 +226,7 @@
   </table>
 <% end %>
 <div class="button-container">
-<button id = 'button5' class="button-blue" class="centered-text">シフト追加</button>
+<button id = 'button5' class="button-blue" class="centered-text">シフト割当</button>
 <button id = 'button6' class="button-red" class="centered-text">シフト削除</button>
 </div>
 <div id="SearchFormContainer">
@@ -297,6 +297,7 @@
   const delete_assignment = document.getElementById('delete_assignment');
   const add_assignment = document.getElementById('add_assignment');
   const SearchButton = document.getElementById('SearchButton');
+  const SubmitButton = document.getElementById('search_b');
 
   button1.addEventListener('click', function() {
     SearchForm.style.display = 'block';
@@ -409,6 +410,7 @@ function httpGet(query) {
         var response = JSON.parse(xmlHttp.responseText);
         if (response.hasOwnProperty('error')) {
           var container = document.getElementById("tableContainer");
+          SubmitButton.style.display = 'none';
           container.innerHTML = '<div class="error-message">' + response.error + '</div>';;
         }
       }

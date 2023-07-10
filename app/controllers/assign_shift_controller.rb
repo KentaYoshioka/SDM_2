@@ -53,7 +53,7 @@ class AssignShiftController < ApplicationController
       date = Date.parse(params[:date])
       start = Time.parse(params[:start])
       finish = Time.parse(params[:finish])
-      work_time = params[:work_time].to_i
+      work_time = params[:work_time]
       if WorkHour.create_work_hour(date, start, finish, params[:course_id], work_time)
         redirect_to request.referrer
       end
