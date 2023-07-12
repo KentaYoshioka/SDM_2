@@ -1,4 +1,5 @@
 class AssignShiftController < ApplicationController
+include ApplicationHelper
   def index
     unless TeachingAssistant.find_by(description: "dammy")
       TeachingAssistant.create(description: "dammy")
@@ -14,7 +15,8 @@ class AssignShiftController < ApplicationController
   def search
     number = params[:number]
     name = params[:name]
-    @search_result = TeachingAssistant.where("name LIKE ? AND number LIKE ?", "%#{name}%","%#{number}%")
+    fiscal_year = current_fiscal_year
+    @search_result = TeachingAssistant.where(year: fiscal_year).where("name LIKE ? AND number LIKE ?", "%#{name}%","%#{number}%")
 
     if @search_result.empty?
       puts "検索結果がありません．"
@@ -33,6 +35,7 @@ class AssignShiftController < ApplicationController
       render json: { error: '対象者が選択されていません．' }, status: :unprocessable_entity
     else
       Assignment.add_ta(params[:course_id], selected_TA)
+      flash[:success]="TAが割り当てられました"
       redirect_to request.referrer
     end
   end
@@ -44,6 +47,7 @@ class AssignShiftController < ApplicationController
       render json: { error: '削除対象者が選択されていません．' }, status: :unprocessable_entity
     else
       Assignment.delete_ta(selected_ta)
+      flash[:success]="TAが削除されました"
       redirect_to request.referrer
     end
   end
@@ -55,10 +59,10 @@ class AssignShiftController < ApplicationController
       finish = Time.parse(params[:finish])
       work_time = params[:work_time]
       if WorkHour.create_work_hour(date, start, finish, params[:course_id], work_time)
+        flash[:success]="勤務時間が割り当てられました"
         redirect_to request.referrer
       end
     else
-      puts "日時，実働時間を選択してください．"
     end
   end
 
@@ -70,10 +74,10 @@ class AssignShiftController < ApplicationController
         work=WorkHour.find_by(id: work_time_id.to_i)
         work.destroy
       end
+      flash[:success]="勤務時間が削除されました．"
       redirect_to request.referrer
     else
       render json: { error: '削除する勤務時間が選択されていません．' }, status: :unprocessable_entity
-      puts "勤務時間削除の対象が選択されていません．"
     end
 
   end
@@ -81,21 +85,28 @@ class AssignShiftController < ApplicationController
   def add_assignment
     teaching_assistant = params[:teaching_assistant_id]
     work_hour_id = params[:work_hour_id].to_i
+    puts params[:course_id]
+    if Assignment.duplication?(teaching_assistant,work_hour_id)
+      flash[:duplication] = "勤務時間が重複しています"
+      redirect_to request.referrer and return
+    end
     assignment = Assignment.find_by(course_id: params[:course_id], teaching_assistant_id: teaching_assistant)
     work_hour = WorkHour.find_by(id: work_hour_id)
     WorkHour.create(start_time: work_hour.start_time, end_time: work_hour.end_time, assignment_id: assignment.id,work_time: work_hour.work_time)
-    redirect_to request.referrer
+    flash[:success]="シフトが割り当てられました"
+    redirect_to request.referrer and return
   end
 
   def delete_assgnment
     selected_assign = params[:selected_items]
     if selected_assign.nil?
-      render json: { error: '削除するシフトが選択されていません．' }, status: :unprocessable_entity
+      render json: { error: '削除するシフトが選択されていません' }, status: :unprocessable_entity
     else
       selected_assign.each do |work_time_id|
         work=WorkHour.find_by(id: work_time_id.to_i)
         work.destroy
       end
+      flash[:success]="シフトが削除されました"
       redirect_to request.referrer
     end
   end

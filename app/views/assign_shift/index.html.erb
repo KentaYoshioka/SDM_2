@@ -1,5 +1,6 @@
 <h1>TAシフト割当画面</h1>
-
+<div class="error-message" ><%= flash[:duplication] %></div>
+<div class="message"><%= flash[:success] %></div>
 <h2>科目情報</h2>
 <body>
     <table class="table-container" style="width: 50%">
@@ -36,7 +37,7 @@
 		 <% course = @course %>
         <tr>
             <td style="text-align: right;"><%= course.time_budget%></td>
-            <td style="text-align: right;">0</td>
+            <td style="text-align: right;"><%= calc_time_allcation(course)%></td>
             <td style="width: 60%"><%= course.description%></td>
         </tr>
       </tbody>
@@ -251,6 +252,7 @@
         <label for="work_hour_id">勤務時間:</label>
           <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
           <button type="submit" >確定</button>
+          <div class="error-message" ><%= flash[:duplication] %></div>
       <% else %>
         <div class="error-message">科目にTAを割り当ててください</div>
       <% end %>
@@ -325,54 +327,36 @@
   var messageContainer_1 = document.getElementById("messageContainer_1")
   var messageContainer_2 = document.getElementById("messageContainer_2")
   var messageContainer_3 = document.getElementById("messageContainer_3")
+  const formsToHide = [myForm, resultForm, work_form, delete_assignment, add_assignment, deleteForm, delete_work_time];
+  const messageToHide = [messageContainer_1,messageContainer_2,messageContainer_3];
 
 
+  function handleButtonClick(button, targetElement, message) {
+    button.addEventListener('click', function() {
+      if(targetElement.style.display == 'block'){
+      targetElement.style.display = 'none';
+      return
+      }
+      targetElement.style.display = 'block';
+      for (const form of formsToHide) {
+        if (form != targetElement) {
+          form.style.display = 'none';
+        }
+      }
+      for (const mes of messageToHide) {
+        if (mes != message) {
+          mes.innerHTML = '';
+        }
+      }
+    });
+  }
 
-  button1.addEventListener('click', function() {
-    SearchForm.style.display = 'block';
-    deleteForm.style.display = 'none';
-    messageContainer_1.innerHTML = '';
-    messageContainer_2.innerHTML = '';
-    messageContainer_3.innerHTML = '';
-  });
-
-  button2.addEventListener('click', function() {
-    deleteForm.style.display = 'block';
-    SearchForm.style.display = 'none';
-    resultForm.style.display = 'none';
-    messageContainer_2.innerHTML = '';
-    messageContainer_3.innerHTML = '';
-  });
-
-  button3.addEventListener('click', function() {
-    work_form.style.display = 'block';
-    delete_work_time.style.display = 'none';
-    messageContainer_1.innerHTML = '';
-    messageContainer_2.innerHTML = '';
-    messageContainer_3.innerHTML = '';
-  });
-
-  button4.addEventListener('click', function() {
-    delete_work_time.style.display = 'block';
-    work_form.style.display = 'none';
-    messageContainer_1.innerHTML = '';
-    messageContainer_3.innerHTML = '';
-  });
-
-  button5.addEventListener('click', function() {
-    add_assignment.style.display = 'block';
-    delete_assignment.style.display = 'none';
-    messageContainer_1.innerHTML = '';
-    messageContainer_2.innerHTML = '';
-    messageContainer_3.innerHTML = '';
-  });
-
-  button6.addEventListener('click', function() {
-    delete_assignment.style.display = 'block';
-    add_assignment.style.display = 'none';
-    messageContainer_1.innerHTML = '';
-    messageContainer_2.innerHTML = '';
-  });
+  handleButtonClick(button1, myForm)
+  handleButtonClick(button2, deleteForm, messageContainer_1)
+  handleButtonClick(button3, work_form);
+  handleButtonClick(button4, delete_work_time, messageContainer_2);
+  handleButtonClick(button5, add_assignment);
+  handleButtonClick(button6, delete_assignment, messageContainer_3);
 
   SearchButton.addEventListener('click', function() {
     resultForm.style.display = 'block';
@@ -383,22 +367,16 @@
     }
   });
 
+  const options = {
+  enableTime: true,
+  noCalendar: true,
+  time_24hr: true,
+  };
+
+  flatpickr("#start", options);
+  flatpickr("#finish", options);
   flatpickr("#date", {
     dateFormat: "Y-m-d",
-  });
-
-  flatpickr("#start", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-  });
-
-  flatpickr("#finish", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
   });
 
 /********************************************************エラーメッセージ出力関数*******************************************************/
@@ -406,13 +384,12 @@ function errorMessage(formId, messageContainerId, errorMessage) {
   var form = document.getElementById(formId);
 
   form.addEventListener('submit', function(event) {
-    event.preventDefault(); // フォームのデフォルトの送信をキャンセル
+    event.preventDefault();
 
     var selectedItems = Array.from(document.querySelectorAll('input[name="selected_items[]"]:checked'))
       .map(function(checkbox) {
         return checkbox.value;
       });
-
 
     if (selectedItems.length === 0) {
       var errorDiv = document.getElementById(messageContainerId).querySelector('.error-message');
@@ -422,94 +399,86 @@ function errorMessage(formId, messageContainerId, errorMessage) {
         errorDiv.classList.add("error-message");
         document.getElementById(messageContainerId).appendChild(errorDiv);
       }
-      return; // エラーメッセージを表示した後、ここで処理を終了してフォームの送信をブロックする
+      return;
     }
-
-    // 条件が満たされた場合は、通常のフォームの送信を行う
     this.submit();
   });
 }
 
-
-
+errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません");
+errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません");
+errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません");
+errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません");
 /**********************************************************************************************************************/
-// 使用例
-// errorMessage(アクション名，ID，出力するメッセージ)
-errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択されていません．");
-errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません．");
-errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません．");
-errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません．");
 
 
+  document.addEventListener("DOMContentLoaded", function() {
+    var flashMessage = document.getElementById("flash-message");
+    flashMessage.addEventListener("click", function() {
+      flashMessage.innerHTML = "";
+    });
+  });
 
-
-function httpGet(query) {
-  var xmlHttp = new XMLHttpRequest();
-  xmlHttp.onreadystatechange = function() {
-    if (xmlHttp.readyState == 4) {
-      if (xmlHttp.status == 200) {
-        table(xmlHttp.responseText);
-        resultform.style.display = 'block';
-      } else if (xmlHttp.status == 422) {
-        var response = JSON.parse(xmlHttp.responseText);
-        if (response.hasOwnProperty('error')) {
-          var container = document.getElementById("tableContainer");
-          SubmitButton.style.display = 'none';
-          container.innerHTML = '<div class="error-message">' + response.error + '</div>';;
+  function httpGet(query) {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+      if (xmlHttp.readyState == 4) {
+        if (xmlHttp.status == 200) {
+          table(xmlHttp.responseText);
+          resultform.style.display = 'block';
+          SubmitButton.style.display = 'block';
+        } else if (xmlHttp.status == 422) {
+          var response = JSON.parse(xmlHttp.responseText);
+          if (response.hasOwnProperty('error')) {
+            var container = document.getElementById("tableContainer");
+            SubmitButton.style.display = 'none';
+            container.innerHTML = '<div class="error-message">' + response.error + '</div>';;
+          }
         }
       }
+    };
+    xmlHttp.open("POST", "/search");
+    xmlHttp.send(query);
+  }
+
+  function table(jsonData) {
+    let TA = JSON.parse(jsonData);
+    var table = document.createElement("table");
+    table.classList.add("scrollable-table"); // テーブルにクラスを追加
+
+    var headerRow = table.insertRow();
+    var headerCell = headerRow.insertCell();
+    headerCell = headerRow.insertCell();
+    headerCell.textContent = "学生番号";
+    headerCell.classList.add("scrollable-table");
+    headerCell = headerRow.insertCell();
+    headerCell.classList.add("scrollable-table");
+    headerCell.textContent = "名前";
+
+    var tbody = document.createElement("tbody");
+    for (var i = 0; i < TA.length; i++) {
+      var row = table.insertRow();
+      var checkboxCell = row.insertCell();
+      var checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.name = "selected_items[]";
+      checkbox.value = TA[i].id;
+      checkboxCell.appendChild(checkbox);
+      checkbox.classList.add("scrollable-table");
+
+      var nameCell = row.insertCell();
+      nameCell.textContent = TA[i].number;
+      nameCell = row.insertCell();
+      nameCell.textContent = TA[i].name;
+      nameCell.classList.add("scrollable-table");
     }
-  };
-  xmlHttp.open("POST", "/search");
-  xmlHttp.send(query);
-}
 
+  var tableWrapper = document.createElement("div");
+  tableWrapper.classList.add("scrollable-table-wrapper");
+  tableWrapper.appendChild(table);
 
-
-
-function dom(id, content){
-    document.getElementById(id).innerHTML = content;
-}
-
-function table(jsonData) {
-let TA = JSON.parse(jsonData);
-var table = document.createElement("table");
-table.classList.add("scrollable-table"); // テーブルにクラスを追加
-
-var headerRow = table.insertRow();
-var headerCell = headerRow.insertCell();
-headerCell = headerRow.insertCell();
-headerCell.textContent = "学生番号";
-headerCell.classList.add("scrollable-table");
-headerCell = headerRow.insertCell();
-headerCell.classList.add("scrollable-table");
-headerCell.textContent = "名前";
-
-var tbody = document.createElement("tbody");
-for (var i = 0; i < TA.length; i++) {
-  var row = table.insertRow();
-  var checkboxCell = row.insertCell();
-  var checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.name = "selected_items[]";
-  checkbox.value = TA[i].id;
-  checkboxCell.appendChild(checkbox);
-  checkbox.classList.add("scrollable-table");
-
-  var nameCell = row.insertCell();
-  nameCell.textContent = TA[i].number;
-  nameCell = row.insertCell();
-  nameCell.textContent = TA[i].name;
-  nameCell.classList.add("scrollable-table");
-}
-
-var tableWrapper = document.createElement("div");
-tableWrapper.classList.add("scrollable-table-wrapper");
-tableWrapper.appendChild(table);
-
-var container = document.getElementById("tableContainer");
-container.innerHTML = "";
-container.appendChild(tableWrapper);
-}
-
+  var container = document.getElementById("tableContainer");
+  container.innerHTML = "";
+  container.appendChild(tableWrapper);
+  }
 </script>
