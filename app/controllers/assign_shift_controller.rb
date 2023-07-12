@@ -53,7 +53,19 @@ include ApplicationHelper
   end
 
   def add_work_time
-    if params[:date].present? && params[:start].present? && params[:finish].present? && params[:work_time].present?
+    start_time = Time.parse(params[:start])
+    finish_time = Time.parse(params[:finish])
+    work_time = params[:work_time].to_i
+    if params[:work_time] == "0"
+      flash[:duplication]="入力値に異常があります"
+      redirect_to request.referrer
+    elsif params[:start] >= params[:finish]
+      flash[:duplication]="入力値に異常があります"
+      redirect_to request.referrer
+    elsif finish_time - start_time < work_time.minutes
+      flash[:duplication]="入力値に異常があります"
+      redirect_to request.referrer
+    elsif params[:date].present? && params[:start].present? && params[:finish].present? && params[:work_time].present?
       date = Date.parse(params[:date])
       start = Time.parse(params[:start])
       finish = Time.parse(params[:finish])
@@ -63,6 +75,8 @@ include ApplicationHelper
         redirect_to request.referrer
       end
     else
+      flash[:duplication]="入力値に異常があります"
+      redirect_to request.referrer
     end
   end
 
