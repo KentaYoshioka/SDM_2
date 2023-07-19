@@ -33,13 +33,19 @@ include ApplicationHelper
     puts selected_TA
     if selected_TA.nil?
       render json: { error: '対象者が選択されていません．' }, status: :unprocessable_entity
+
     else
-      Assignment.add_ta(params[:course_id], selected_TA)
-      flash[:success]="TAが割り当てられました"
-      redirect_to request.referrer
+      judge_same_record = Assignment.find_by(course_id:params[:course_id], teaching_assistant_id:selected_TA)
+      if judge_same_record.nil?
+        Assignment.add_ta(params[:course_id], selected_TA)
+        flash[:success]="TAが割り当てられました"
+        redirect_to request.referrer
+      else
+        flash[:same_record] = "すでに追加されているTAが含まれています．"
+        redirect_to request.referrer
+      end
     end
   end
-
 
   def delete_TA
     selected_ta = params[:selected_items]
@@ -55,7 +61,8 @@ include ApplicationHelper
   def add_work_time
     start_time = params[:start].present? ? Time.parse(params[:start]) : nil
     finish_time = params[:finish].present? ? Time.parse(params[:finish]) : nil
-    work_time = params[:work_time].present? ? params[:work_time].to_i : 0    
+    work_time = params[:work_time].present? ? params[:work_time].to_i : 0
+
     if params[:work_time] == "0"
       flash[:duplication]="入力値に異常があります"
       redirect_to request.referrer
@@ -70,16 +77,16 @@ include ApplicationHelper
       start = Time.parse(params[:start])
       finish = Time.parse(params[:finish])
       work_time = params[:work_time]
+
       if WorkHour.create_work_hour(date, start, finish, params[:course_id], work_time)
         flash[:success]="勤務時間が割り当てられました"
         redirect_to request.referrer
+      else
+        flash[:duplication]="同じ勤務時間がすでに存在します．"
+        redirect_to request.referrer
       end
-    else
-      flash[:duplication]="入力値に異常があります"
-      redirect_to request.referrer
     end
   end
-
 
   def delete_work_time
     if params[:selected_items].present?
@@ -100,16 +107,34 @@ include ApplicationHelper
     teaching_assistant = params[:teaching_assistant_id]
     work_hour_id = params[:work_hour_id].to_i
     puts params[:course_id]
-    if Assignment.duplication?(teaching_assistant,work_hour_id)
-      flash[:duplication] = "勤務時間が重複しています"
-      redirect_to request.referrer and return
-    end
     assignment = Assignment.find_by(course_id: params[:course_id], teaching_assistant_id: teaching_assistant)
     work_hour = WorkHour.find_by(id: work_hour_id)
-    WorkHour.create(start_time: work_hour.start_time, end_time: work_hour.end_time, assignment_id: assignment.id,work_time: work_hour.work_time)
-    flash[:success]="シフトが割り当てられました"
-    redirect_to request.referrer and return
+    course = Course.find(params[:course_id])
+    total_work_time = calc_time_allcation(course) #実働時間の合計
+    total_budget = Course.find_by(id: params[:course_id]).time_budget #TA割当可能総時間
+
+    if work_hour.nil? || assignment.nil?
+      puts "-------------------------erroe---------------"
+      flash[:nil_error] = "指定のTA，勤務時間が削除されたため，シフトを割当てることができません．"
+      redirect_to request.referrer and return
+
+    else
+        if Assignment.duplication?(teaching_assistant,work_hour_id)
+          flash[:duplication] = "勤務時間が重複しています"
+          redirect_to request.referrer and return
+        end
+
+        if total_budget < total_work_time + work_hour.work_time
+          flash[:error_total]="TA割当可能総時間を割当済時間が超過しています．"
+          redirect_to request.referrer and return
+        end
+
+          WorkHour.create(start_time: work_hour.start_time, end_time: work_hour.end_time, assignment_id: assignment.id,work_time: work_hour.work_time)
+          flash[:success]="シフトが割り当てられました"
+          redirect_to request.referrer
+      end
   end
+
 
   def delete_assgnment
     selected_assign = params[:selected_items]

@@ -6,26 +6,25 @@
 </div>
 
 <div id="SearchFormContainer" style="text-align: center;">
-  <%# <form id="SearchForm" action="/show_reports/search" method="POST"> %>
+  <%= form_with url: '/show_reports/search', local: true, method: :get do |f| %>
     <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
 
     <label for="number">学生番号:</label>
-    <%= form_with url: '/show_reports/search', local: true, method: :get do |f| %>
-      <%= f.text_field :word_number %>
-      <%= f.submit "検索", class: "btn btn-primary", style: "margin: 20px auto 0" %>
-    <% end %>
-    <label for="name">氏名:</label>
-    <%= form_with url: '/show_reports/search', local: true, method: :get do |f| %>
-      <%= f.text_field :word_name %>
-      <%= f.submit "検索", class: "btn btn-primary", style: "margin: 20px auto 0" %>
-    <% end %>
-
-    <br>
-
+    <%= f.text_field :word_number %>
+    <%= f.submit "検索", class: "btn btn-primary", style: "margin: 20px auto 0" %>
+    <br style="margin-top: 5px;">
+    <label for="name">　　氏名:</label>
+    <%= f.text_field :word_name %>
+    <%= f.submit "検索", class: "btn btn-primary", style: "margin: 20px auto 0" %>
+  <% end %>
+  <br>
 </div>
+<div id="messageContainer_1"></div>
 
 <br>
-<table class="table-container">
+
+<div class="specific-table-container">
+  <table class="table-container">
     <% if @teachingassistants.present? %>
   <thead>
     <tr>
@@ -42,20 +41,17 @@
           <td><%= teachingassistant.name %></td>
           <td><%= link_to '様式１', show_reports_write_excel1_path(student_id: teachingassistant.number) %></td>
           <td><%= link_to '様式2', show_reports_write_excel2_path(student_id: teachingassistant.number) %></td>
+        </tr>
       <% end %>
     <% else %>
-      <tr>
-        <td><%= @message %></td>
-      </tr>
+      <p class="error-message"><%= @message %></p>
     <% end %>
   </tbody>
 </table>
-
-<div class="bottom-left">
-  <%= link_to 'TOP画面に戻る', '/top/index' %>
 </div>
 
-<script>
 
-</script>
+<p>
+  <%= link_to 'TOP画面に戻る', '/top/index' %>
+</p>
 
