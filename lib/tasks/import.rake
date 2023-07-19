@@ -3,20 +3,19 @@ require 'set'
 
 def append_to_old_csv(old_file, new_file)
   old_records = CSV.read(old_file, headers: true)
-  new_records = CSV.read(new_file, headers: true)
 
   if old_records.empty?
-    old_records << new_records.headers
-  end
-
-  old_records << new_records
-
-  CSV.open(old_file, 'a', headers: true, encoding: Encoding::UTF_8) do |csv|
-    if old_records.empty?
-      csv << new_records.headers
+    CSV.open(old_file, 'a', encoding: Encoding::UTF_8) do |csv|
+      csv << CSV.read(new_file, headers: true).headers
+      CSV.foreach(new_file) do |row|
+        csv << row
+      end
     end
-    CSV.foreach(new_file) do |row|
-      csv << row
+  else
+    CSV.open(old_file, 'a', headers: true, encoding: Encoding::UTF_8) do |csv|
+      CSV.foreach(new_file) do |row|
+        csv << row
+      end
     end
   end
 end
@@ -32,6 +31,7 @@ namespace :import do
     path_old = File.join Rails.root, "db/courses_old.csv"
     puts "path: #{path}"
     puts "path_old: #{path_old}"
+
     list_diff = []
     
     old_file_data = Set.new
@@ -69,13 +69,13 @@ namespace :import do
     puts "start to create course data"
     begin
       Course.create!(list_diff) #クラス名注意
-      puts "completed!!"
+      puts "Completed : Register course_data"
     rescue ActiveModel::UnknownAttributeError => invalid
       puts "raised error : unKnown attribute of course"
     end
     
     append_to_old_csv(path_old,path)
-    puts "Completed appending data to courses_old.csv"
+    puts "Completed : Write course_data"
 
   end
 
@@ -84,6 +84,7 @@ namespace :import do
     path_old = File.join Rails.root, "db/teaching_assistants_old.csv"
     puts "path: #{path}"
     puts "path_old: #{path_old}"
+    
     list_diff = []
   
     old_file_data = Set.new
@@ -119,12 +120,12 @@ namespace :import do
     puts "start to create teaching_assistant data"
     begin
       TeachingAssistant.create!(list_diff) #クラス名注意
-      puts "completed!!"
+      puts "Completed : Register teaching_assistant"
     rescue ActiveModel::UnknownAttributeError => invalid
       puts "raised error : unKnown attribute of teaching_assistant"
     end
 
     append_to_old_csv(path_old,path)
-    puts "Completed appending data to teaching_assistant_old.csv"
+    puts "Completed : Write teaching_assistant"
   end
 end
