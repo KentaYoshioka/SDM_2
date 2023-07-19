@@ -25,14 +25,16 @@
 </div>
 
 <br>
+<% if @teachingassistants.present? %>
 <table class="table-container">
-    <% if @teachingassistants.present? %>
   <thead>
     <tr>
       <th>学生番号</th>
       <th>氏名</th>
       <th>出力データ(様式1)</th>
       <th>出力データ(様式2)</th>
+      <th>様式１ダウンロード</th>
+      <th>様式２ダウンロード</th>
     </tr>
   </thead>
   <tbody>
@@ -40,16 +42,84 @@
         <tr>
           <td><%= teachingassistant.number %></td>
           <td><%= teachingassistant.name %></td>
-          <td><%= link_to '様式１', show_reports_write_excel1_path(student_id: teachingassistant.number) %></td>
-          <td><%= link_to '様式2', show_reports_write_excel2_path(student_id: teachingassistant.number) %></td>
+          <td><%= link_to '様式１データ', show_reports_view_info1_path(student_id: teachingassistant.number) %></td>
+          <td><%= link_to '様式2データ', show_reports_view_info2_path(student_id: teachingassistant.number) %></td>          
+          <td><%= link_to 'ダウンロード', show_reports_write_excel1_path(student_id: teachingassistant.number) %></td>
+          <td><%= link_to 'ダウンロード', show_reports_write_excel2_path(student_id: teachingassistant.number) %></td>
       <% end %>
     <% else %>
       <tr>
         <td><%= @message %></td>
       </tr>
-    <% end %>
   </tbody>
 </table>
+<% end %>
+<% if @course_info.present? %>
+<table class="table-container">
+    <thead>
+      <tr>
+        <th>氏名</th>
+        <th>学生番号</th>
+        <th>学位</th>
+        <th>科目名</th>
+        <th>科目番号</th>
+        <th>学期</th>
+        <th>開始時刻</th>
+        <th>終了時刻</th>
+        <th>勤務時間</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @shifts.each do |shift| %>
+        <tr>
+          <td><%= @teaching_assistant.name %></td>
+          <td><%= @teaching_assistant.number %></td>
+          <td><%= @teaching_assistant.grade %></td>
+          <td><%= @course_info[shift.id].name %></td>
+          <td><%= @course_info[shift.id].number %></td>
+          <td><%= @course_info[shift.id].term %></td>
+          <td><%= @work_infos[shift.id].first.start_time.localtime.strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td><%= @work_infos[shift.id].first.end_time.localtime.strftime("%Y-%m-%d %H:%M:%S") %></td>
+          <td><%= @work_infos[shift.id].first.work_time %></td>
+        </tr>
+      <% end %>
+    </tbody>
+</table>
+<div style="text-align: center;">
+<%= link_to 'ダウンロード', show_reports_write_excel1_path(student_id: @teaching_assistant.number) %>
+</div>
+<% end %>
+
+<% if @month.present? %>
+<table class="table-container">
+    <thead>
+      <tr>
+        <th>氏名</th>
+        <th>学生番号</th>
+        <th>学位</th>
+        <th>月</th>
+        <th>日</th>
+        <th>勤務時間</th>
+        
+      </tr>
+    </thead>
+    <tbody>
+      <% @shifts.each do |shift| %>
+        <tr>
+          <td><%= @teaching_assistant.name %></td>
+          <td><%= @teaching_assistant.number %></td>
+          <td><%= @teaching_assistant.grade %></td>
+          <td><%= @month[shift.id] %></td>
+          <td><%= @day[shift.id] %></td>
+          <td><%= @work_infos[shift.id].first.work_time %></td>
+        </tr>
+      <% end %>
+    </tbody>
+</table>
+<div style="text-align: center;">
+  <%= link_to 'ダウンロード', show_reports_write_excel1_path(student_id: @teaching_assistant.number) %>
+</div>
+<% end %>
 
 <div class="bottom-left">
   <%= link_to 'TOP画面に戻る', '/top/index' %>

@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   post '/delete_assgnment', to: "assign_shift#delete_assgnment", as: 'delete_assgnment'
   get '/show_reports', to: 'show_reports#index'
   get '/show_reports/search', to: 'show_reports#search'
+  get '/show_reports/view_info1', to: 'show_reports#view_info1'
+  get '/show_reports/view_info2', to: 'show_reports#view_info2'
   get '/show_reports/write_excel1', to: 'show_reports#write_excel1'
   get '/show_reports/write_excel2', to: 'show_reports#write_excel2'
   get '/download_excel', to: 'show_reports#download_excel', as: 'download_excel'
