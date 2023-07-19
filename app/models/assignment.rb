@@ -31,4 +31,17 @@ class Assignment < ApplicationRecord
     end
   end
 
+  def self.duplication?(teaching_assistant_id, work_hour_id)
+    workhour = WorkHour.find_by(id: work_hour_id)
+    results = WorkHour.where("start_time <= ? AND end_time >= ?", workhour.end_time, workhour.start_time)
+    results.each do |result|
+      assign = Assignment.find_by(id: result.assignment_id)
+      if assign.teaching_assistant_id == teaching_assistant_id.to_i
+        return true
+      end
+    end
+    return false
+  end
+
+
 end
