@@ -8,7 +8,7 @@ setup:
 	docker compose up -d
 
 import:
-	docker compose exec myapp bash -c 'bundle exec rake import:all'
+	docker compose exec myapp bash -c 'bundle exec rails import:all'
 
 start:
 	docker compose exec myapp bash -c 'bundle exec rails server -b 0.0.0.0'
