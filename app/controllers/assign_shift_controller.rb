@@ -34,9 +34,14 @@ include ApplicationHelper
     if selected_TA.nil?
       render json: { error: '対象者が選択されていません．' }, status: :unprocessable_entity
     else
-      Assignment.add_ta(params[:course_id], selected_TA)
-      flash[:success]="TAが割り当てられました"
-      redirect_to request.referrer
+      message = Assignment.add_ta(params[:course_id], selected_TA)
+      if message.present?
+        flash[:duplication]=message
+        redirect_to request.referrer
+      else
+        flash[:success]="TAが割り当てられました"
+        redirect_to request.referrer
+      end
     end
   end
 
@@ -55,7 +60,7 @@ include ApplicationHelper
   def add_work_time
     start_time = params[:start].present? ? Time.parse(params[:start]) : nil
     finish_time = params[:finish].present? ? Time.parse(params[:finish]) : nil
-    work_time = params[:work_time].present? ? params[:work_time].to_i : 0    
+    work_time = params[:work_time].present? ? params[:work_time].to_i : 0
     if params[:work_time] == "0"
       flash[:duplication]="入力値に異常があります"
       redirect_to request.referrer
