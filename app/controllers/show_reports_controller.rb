@@ -1,4 +1,5 @@
 class ShowReportsController < ApplicationController
+include ApplicationHelper
   require 'rubyXL'
   require 'rubyXL/convenience_methods'
 
@@ -7,15 +8,16 @@ class ShowReportsController < ApplicationController
 
 
   def search
+    fiscal_year = current_fiscal_year
     if params[:word_number].present? && params[:word_number].length < 128
       @word = params[:word_number]
-      @teachingassistants = TeachingAssistant.where("number LIKE ?", "%#{@word}%")
+      @teachingassistants = TeachingAssistant.where(year:fiscal_year).where("number LIKE ?", "%#{@word}%")
       if @teachingassistants.empty?
         @message= "該当するデータがありません。"
      end
     elsif params[:word_name].present? && params[:word_name].length < 128
       @word = params[:word_name]
-      @teachingassistants = TeachingAssistant.where("name LIKE ?", "%#{@word}%")
+      @teachingassistants = TeachingAssistant.where(year:fiscal_year).where("name LIKE ?", "%#{@word}%")
       if @teachingassistants.empty?
         @message= "該当するデータがありません。"
      end

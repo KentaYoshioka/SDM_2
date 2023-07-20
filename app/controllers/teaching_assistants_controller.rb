@@ -1,5 +1,7 @@
 class TeachingAssistantsController < ApplicationController
+include ApplicationHelper
   def index
-    @TA_data = TeachingAssistant.all
+    fiscal_year = current_fiscal_year
+    @TA_data = TeachingAssistant.where(year:fiscal_year)
   end
 end

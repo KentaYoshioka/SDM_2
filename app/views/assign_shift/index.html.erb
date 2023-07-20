@@ -1,6 +1,11 @@
 <h1>TAシフト割当画面</h1>
 <div class="error-message" ><%= flash[:duplication] %></div>
 <div class="message"><%= flash[:success] %></div>
+<div class="error-message" ><%= flash[:error_total]%></div>
+<div class="error-message" ><%= flash[:nil_error]%></div>
+<div class="error-message" ><%= flash[:same_record]%></div>
+
+
 <h2>科目情報</h2>
 <body>
     <table class="table-container" style="width: 50%">
@@ -252,7 +257,6 @@
         <label for="work_hour_id">勤務時間:</label>
           <%= select_tag :work_hour_id, options_for_select(@work_hour.pluck(:id, :start_time, :end_time, :work_time).map { |id, start_time, end_time, work_time| ["#{start_time.strftime('%Y年%m月%d日 %H:%M')} ~ #{end_time.strftime('%Y年%m月%d日 %H:%M')} (#{work_time})", id] }) %>
           <button type="submit" >確定</button>
-          <div class="error-message" ><%= flash[:duplication] %></div>
       <% else %>
         <div class="error-message">科目にTAを割り当ててください</div>
       <% end %>
@@ -409,6 +413,7 @@ errorMessage("delete_TA", "messageContainer_1", "削除するTAが選択され�
 errorMessage("delete_work_time", "messageContainer_2", "削除する勤務時間が選択されていません");
 errorMessage("delete_assignment", "messageContainer_3", "削除するシフトが選択されていません");
 errorMessage("resultform", "messageContainer_4", "追加するTAが選択されていません");
+
 /**********************************************************************************************************************/
 
 
