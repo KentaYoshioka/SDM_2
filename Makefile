@@ -3,6 +3,7 @@ setup:
 	rm config/credentials.yml.enc
 	EDITOR="mate --wait" bin/rails credentials:edit
 	bundle exec rails db:migrate RAILS_ENV=production
+	RAILS_ENV=production bin/rails assets:precompile
 	read -p "Enter username: " username && read -p "Enter password: " password && echo "BASIC_AUTH_USER=$$username" > .env && echo "BASIC_AUTH_PASSWORD=$$password" >> .env && echo "Credentials set: USERNAME=$$username, PASSWORD=$$password"
 
 import:
