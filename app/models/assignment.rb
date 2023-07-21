@@ -11,8 +11,7 @@ class Assignment < ApplicationRecord
       ta_ids.each do |ta_id|
         existing_record = find_by(course_id: course_id, teaching_assistant_id: ta_id)
         if existing_record
-          puts ta_id
-          puts "すでに追加されています"
+          return "すでに追加されています"
         else
           create(course_id: course_id, teaching_assistant_id: ta_id)
         end
