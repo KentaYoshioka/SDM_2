@@ -1,6 +1,7 @@
 setup:
 	bundle install
 	rm config/credentials.yml.enc
+	bundle exec rails credentials:edit
 	bundle exec rails db:migrate RAILS_ENV=production
 	read -p "Enter username: " username && read -p "Enter password: " password && echo "BASIC_AUTH_USER=$$username" > .env && echo "BASIC_AUTH_PASSWORD=$$password" >> .env && echo "Credentials set: USERNAME=$$username, PASSWORD=$$password"
 
