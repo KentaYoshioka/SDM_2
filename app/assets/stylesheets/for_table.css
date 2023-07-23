@@ -92,6 +92,12 @@ input[type="checkbox"] {
 
 
 
+.student-info {
+  background-color: #f0f0f0; /* バックグラウンド色を設定 */
+  padding: 10px; /* 上下左右に余白を追加 */
+  margin-bottom: 20px; /* 下部に余白を追加 */
+}
+
 
 
 
