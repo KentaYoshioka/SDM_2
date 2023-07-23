@@ -16,6 +16,7 @@ class Assignment < ApplicationRecord
           create(course_id: course_id, teaching_assistant_id: ta_id)
         end
       end
+      return nil
     end
   end
 
