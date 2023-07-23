@@ -73,11 +73,6 @@
     </tr>
   </tbody>
 </table>
-
-<div style="text-align: center;">
-<%= link_to 'ダウンロード', show_reports_write_excel1_path(student_id: @teaching_assistant.number) %>
-</div>
-
 <% end %>
 
 <% if @course_info.present? %>
@@ -118,7 +113,9 @@
       <% end %>
     </tbody>
 </table>
-
+<div style="text-align: center;">
+<%= link_to 'ダウンロード', show_reports_write_excel1_path(student_id: @teaching_assistant.number) %>
+</div>
 <% end %>
 
 
