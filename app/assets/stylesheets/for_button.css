@@ -32,6 +32,8 @@
     text-align: center;
     cursor: pointer;
     width: 150px;
+    font-weight: bold; /* 太さを変更するための値を設定 */
+
   }
     .button-blue:hover {
     background-color: #0056b3;
@@ -50,6 +52,7 @@
     text-align: center;
     cursor: pointer;
     width: 150px;
+    font-weight: bold; /* 太さを変更するための値を設定 */
   }
    .button-red:hover {
      background-color: #b30000;

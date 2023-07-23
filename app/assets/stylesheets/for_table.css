@@ -1,80 +1,93 @@
 
 .table-container {
-    margin-bottom: 20px;
-    border-spacing: 0;
-    margin-left: auto;
-    margin-right: auto;
-  }
+  margin-bottom: 20px;
+  border-spacing: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-  .table-container table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+.table-container table {
+  width: 100%;
+  border-collapse: collapse;
+}
 
-  .table-container th, .table-container td,.table-container td_des {
-    padding: 4px;
-    border: 1px solid #ccc;
-  }
+.table-container th, .table-container td,.table-container td_des {
+  padding: 4px;
+  border: 1px solid #ccc;
+}
 
-
-  .table-container tbody tr {
-    border: 1px solid #ccc;
-  }
-
-  .table-container th {
-    background-color: #f0f0f0;
-    font-weight: bold;
-    text-align: center;
-  }
-
-
-  .table-container td_des {
-    width: 100px;
-  }
+.specific-table-container thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f0f0f0;
+  z-index: 1;
+}
 
 
 
+.table-container tbody tr {
+  border: 1px solid #ccc;
+}
+
+.table-container th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+  text-align: center;
+}
 
 
-  .scrollable-table {
-    margin-bottom: 20px;
-    border-spacing: 0;
-    margin-left: auto;
-    margin-right: auto;
-    width: 50%;
-  }
+.table-container td_des {
+  width: 100px;
+}
 
-  .scrollable-table-wrapper {
-    max-height: 300px; /* 必要な高さを指定 */
-    overflow-y: auto;
-  }
 
-  .scrollable-table table {
-    width: 100%;
-    border-collapse: collapse;
-  }
+.specific-table-container {
+  overflow: auto;
+  max-height: 300px; /* テーブルの最大の高さを指定 */
+}
 
-  .scrollable-table thead th {
-    position: sticky;
-    top: 0;
-    background-color: #f7f7f7;
-  }
 
-  .scrollable-table th,
-  .scrollable-table td {
-    padding: 4px;
-    border: 1px solid #ccc;
-  }
 
-  .scrollable-table-wrapper {
-    max-height: 200px; /* 必要な高さを指定 */
-    overflow: auto;
-  }
 
-  input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-  }
+.scrollable-table {
+  margin-bottom: 20px;
+  border-spacing: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
+
+.scrollable-table-wrapper {
+  max-height: 300px; /* 必要な高さを指定 */
+  overflow-y: auto;
+}
+
+.scrollable-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.scrollable-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f7f7f7;
+}
+
+.scrollable-table th,
+.scrollable-table td {
+  padding: 4px;
+  border: 1px solid #ccc;
+}
+
+.scrollable-table-wrapper {
+  max-height: 200px; /* 必要な高さを指定 */
+  overflow: auto;
+}
+
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+}
 
 
 
