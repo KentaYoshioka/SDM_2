@@ -51,6 +51,11 @@ include ApplicationHelper
       render json: { error: '削除対象者が選択されていません．' }, status: :unprocessable_entity
     else
       Assignment.delete_ta(selected_ta)
+      if Assignment.delete_ta(selected_ta).nil?
+        flash[:duplication] = "すでに削除されたTAがいます．"
+        redirect_to request.referrer
+        return
+      end
       flash[:success]="TAが削除されました"
       redirect_to request.referrer
     end
@@ -90,6 +95,11 @@ include ApplicationHelper
       selected_work_time = params[:selected_items]
       selected_work_time.each do |work_time_id|
         work=WorkHour.find_by(id: work_time_id.to_i)
+    if work.nil?
+      flash[:duplication] = "すでに削除された勤務時間があります．"
+      redirect_to request.referrer
+      return
+    end
         work.destroy
       end
       flash[:success]="勤務時間が削除されました．"
@@ -140,6 +150,11 @@ include ApplicationHelper
     else
       selected_assign.each do |work_time_id|
         work=WorkHour.find_by(id: work_time_id.to_i)
+        if work.nil?
+          flash[:duplication] = "すでに削除されたシフトがあります．"
+          redirect_to request.referrer
+          return
+        end
         work.destroy
       end
       flash[:success]="シフトが削除されました"
