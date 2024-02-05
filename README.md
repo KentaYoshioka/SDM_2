@@ -1,24 +1,36 @@
-# README
+## TA_Time_Management_System
+本アプリケーションはティーチングアシスタント(TA)のシフトの管理およびシフト表の出力を行うアプリケーションである．
+## Installation
+- git を用いてディレクトリのダウンロード
+  ```
+  $ git clone https://github.com/KentaYoshioka/TA_Time_Management_System.git
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+  ```
+- 依存関係のインストール，データベースのマイグレーション
+  ```
+  $ make setup
+  ```
 
-Things you may want to cover:
+- 初期データ(授業情報等)のインストール
+  ```
+  $ make import
+  ```
+- システムの起動
+  ```
+  $ make start
+  ```
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## Install for Docker 
+- コンテナの構築
+  ```
+  make docker-up
+  ```
+- 依存関係のインストール，データベースのマイグレーション
+  ```
+  make docker-setup
+  ```
+- システムの起動
+  ```
+  $ make docker-start
+  ```
+  
